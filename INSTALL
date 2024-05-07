@@ -1,0 +1,1 @@
+conda create -n svlearn2 python=3.9 pysam pyfaidx polars pandas pyarrow scikit-learn bioconda::pybedtools conda-forge::intervaltree

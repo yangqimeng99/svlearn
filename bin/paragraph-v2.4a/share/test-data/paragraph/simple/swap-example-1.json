@@ -1,0 +1,62 @@
+{
+  "model_name": "paragraph example based on a swap / insertion",
+  "sequencenames": [
+    "REF",
+    "ALT"
+  ],
+  "nodes": [
+    {
+      "name": "LF",
+      "reference": "chr6:62832517-62832616"
+    },
+    {
+      "name": "DEL",
+      "reference": "chr6:62832617-62832842"
+    },
+    {
+      "name": "INS",
+      "sequence": "ACGTGTCTTATATTATAAAACTGCACGTTATACCT"
+    },
+    {
+      "name": "RF",
+      "reference": "chr6:62832843-62832943"
+    }
+  ],
+  "edges": [
+    {
+      "from": "LF",
+      "to": "RF"
+    },
+    {
+      "from": "LF",
+      "to": "DEL",
+      "sequences": [
+        "REF"
+      ]
+    },
+    {
+      "from": "LF",
+      "to": "INS",
+      "sequences": [
+        "ALT"
+      ]
+    },
+    {
+      "from": "DEL",
+      "to": "RF",
+      "sequences": [
+        "REF"
+      ]
+    },
+    {
+      "from": "INS",
+      "to": "RF",
+      "sequences": [
+        "ALT"
+      ]
+    }
+  ],
+  "target_regions": [
+    "chr6:62832500-62833000"
+  ]
+}

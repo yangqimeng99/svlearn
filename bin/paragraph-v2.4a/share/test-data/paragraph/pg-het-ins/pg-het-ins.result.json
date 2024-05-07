@@ -1,0 +1,245 @@
+{
+	"alignment_statistics" : 
+	{
+		"alleles" : 
+		{
+			"ALT" : 
+			{
+				"avr_score" : 146.12,
+				"clip_rate" : 0.0033223,
+				"contig_length" : 12,
+				"gap_rate" : 0.0,
+				"match_base_depth" : 199.5,
+				"mismatch_rate" : 0.005814,
+				"num_fwd_reads" : 12,
+				"num_rev_reads" : 4
+			},
+			"REF" : 
+			{
+				"avr_score" : 149.75,
+				"clip_rate" : 0.0055494,
+				"contig_length" : 0,
+				"gap_rate" : 0.0,
+				"mismatch_rate" : 0.00055494,
+				"num_fwd_reads" : 10,
+				"num_rev_reads" : 2
+			}
+		},
+		"bad_alignment_pct" : 0.0,
+		"edges" : 
+		{
+			"chr1:939571-939570:CCCTGGAGGACC_ref-chr1:939571-939720" : 
+			{
+				"clip_rate" : 0.0,
+				"contig_length" : 162,
+				"gap_rate" : 0.0,
+				"match_base_depth" : 6.4691,
+				"mismatch_rate" : 0.0075758,
+				"num_fwd_reads" : 12,
+				"num_rev_reads" : 4
+			},
+			"ref-chr1:939420-939570_chr1:939571-939570:CCCTGGAGGACC" : 
+			{
+				"clip_rate" : 0.0,
+				"contig_length" : 163,
+				"gap_rate" : 0.0,
+				"match_base_depth" : 9.362,
+				"mismatch_rate" : 0.0039164,
+				"num_fwd_reads" : 12,
+				"num_rev_reads" : 3
+			},
+			"ref-chr1:939420-939570_ref-chr1:939571-939720" : 
+			{
+				"clip_rate" : 0.0,
+				"contig_length" : 301,
+				"gap_rate" : 0.0,
+				"match_base_depth" : 5.9834,
+				"mismatch_rate" : 0.00055494,
+				"num_fwd_reads" : 10,
+				"num_rev_reads" : 2
+			}
+		},
+		"nodes" : 
+		{
+			"chr1:939571-939570:CCCTGGAGGACC" : 
+			{
+				"clip_rate" : 0.010417,
+				"contig_length" : 12,
+				"gap_rate" : 0.0,
+				"match_base_depth" : 16.0,
+				"mismatch_rate" : 0.0,
+				"num_fwd_reads" : 12,
+				"num_rev_reads" : 4
+			},
+			"ref-chr1:939420-939570" : 
+			{
+				"clip_rate" : 0.010522,
+				"contig_length" : 151,
+				"gap_rate" : 0.0,
+				"match_base_depth" : 15.682,
+				"mismatch_rate" : 0.003367,
+				"num_fwd_reads" : 22,
+				"num_rev_reads" : 6
+			},
+			"ref-chr1:939571-939720" : 
+			{
+				"clip_rate" : 0.0057173,
+				"contig_length" : 150,
+				"gap_rate" : 0.0,
+				"match_base_depth" : 12.76,
+				"mismatch_rate" : 0.0051975,
+				"num_fwd_reads" : 23,
+				"num_rev_reads" : 6
+			}
+		}
+	},
+	"bam" : "share/test-data/paragraph/pg-het-ins/na12878.bam",
+	"edges" : 
+	[
+		{
+			"from" : "source",
+			"name" : "source_ref-chr1:939420-939570",
+			"to" : "ref-chr1:939420-939570"
+		},
+		{
+			"from" : "ref-chr1:939420-939570",
+			"name" : "ref-chr1:939420-939570_chr1:939571-939570:CCCTGGAGGACC",
+			"sequences" : 
+			[
+				"ALT"
+			],
+			"to" : "chr1:939571-939570:CCCTGGAGGACC"
+		},
+		{
+			"from" : "ref-chr1:939420-939570",
+			"name" : "ref-chr1:939420-939570_ref-chr1:939571-939720",
+			"sequences" : 
+			[
+				"REF"
+			],
+			"to" : "ref-chr1:939571-939720"
+		},
+		{
+			"from" : "chr1:939571-939570:CCCTGGAGGACC",
+			"name" : "chr1:939571-939570:CCCTGGAGGACC_ref-chr1:939571-939720",
+			"sequences" : 
+			[
+				"ALT"
+			],
+			"to" : "ref-chr1:939571-939720"
+		},
+		{
+			"from" : "ref-chr1:939571-939720",
+			"name" : "ref-chr1:939571-939720_sink",
+			"to" : "sink"
+		}
+	],
+	"fragment_statistics" : 
+	{
+		"mean_graph" : null,
+		"mean_linear" : null,
+		"median_graph" : 0.0,
+		"median_linear" : 0.0,
+		"multi_read" : 0,
+		"paired_read" : 0,
+		"problematic_graph" : 0,
+		"problematic_linear" : 0,
+		"single_read" : 30,
+		"variance_graph" : 0.0,
+		"variance_linear" : 0.0
+	},
+	"model_name" : "Graph from pg-het-ins/pg-het-ins.vcf",
+	"nodes" : 
+	[
+		{
+			"name" : "source",
+			"sequence" : "NNNNNNNNNN"
+		},
+		{
+			"name" : "ref-chr1:939420-939570",
+			"reference" : "chr1:939420-939570"
+		},
+		{
+			"name" : "chr1:939571-939570:CCCTGGAGGACC",
+			"position" : "chr1:939571-939570",
+			"sequence" : "CCCTGGAGGACC"
+		},
+		{
+			"name" : "ref-chr1:939571-939720",
+			"reference" : "chr1:939571-939720"
+		},
+		{
+			"name" : "sink",
+			"sequence" : "NNNNNNNNNN"
+		}
+	],
+	"paths" : 
+	[
+		{
+			"nodes" : 
+			[
+				"ref-chr1:939420-939570",
+				"ref-chr1:939571-939720"
+			],
+			"path_id" : "REF|1",
+			"sequence" : "REF"
+		}
+	],
+	"read_counts_by_edge" : 
+	{
+		"chr1:939571-939570:CCCTGGAGGACC_ref-chr1:939571-939720" : 10,
+		"chr1:939571-939570:CCCTGGAGGACC_ref-chr1:939571-939720:FWD" : 8,
+		"chr1:939571-939570:CCCTGGAGGACC_ref-chr1:939571-939720:READS" : 10,
+		"chr1:939571-939570:CCCTGGAGGACC_ref-chr1:939571-939720:REV" : 2,
+		"ref-chr1:939420-939570_chr1:939571-939570:CCCTGGAGGACC" : 14,
+		"ref-chr1:939420-939570_chr1:939571-939570:CCCTGGAGGACC:FWD" : 11,
+		"ref-chr1:939420-939570_chr1:939571-939570:CCCTGGAGGACC:READS" : 14,
+		"ref-chr1:939420-939570_chr1:939571-939570:CCCTGGAGGACC:REV" : 3,
+		"ref-chr1:939420-939570_ref-chr1:939571-939720" : 12,
+		"ref-chr1:939420-939570_ref-chr1:939571-939720:FWD" : 10,
+		"ref-chr1:939420-939570_ref-chr1:939571-939720:READS" : 12,
+		"ref-chr1:939420-939570_ref-chr1:939571-939720:REV" : 2
+	},
+	"read_counts_by_node" : 
+	{
+		"chr1:939571-939570:CCCTGGAGGACC" : 15,
+		"chr1:939571-939570:CCCTGGAGGACC:FWD" : 12,
+		"chr1:939571-939570:CCCTGGAGGACC:READS" : 15,
+		"chr1:939571-939570:CCCTGGAGGACC:REV" : 3,
+		"ref-chr1:939420-939570" : 28,
+		"ref-chr1:939420-939570:FWD" : 22,
+		"ref-chr1:939420-939570:READS" : 28,
+		"ref-chr1:939420-939570:REV" : 6,
+		"ref-chr1:939571-939720" : 29,
+		"ref-chr1:939571-939720:FWD" : 23,
+		"ref-chr1:939571-939720:READS" : 29,
+		"ref-chr1:939571-939720:REV" : 6
+	},
+	"read_counts_by_sequence" : 
+	{
+		"ALT" : 
+		{
+			"total" : 16,
+			"total:FWD" : 12,
+			"total:READS" : 16,
+			"total:REV" : 4
+		},
+		"REF" : 
+		{
+			"total" : 12,
+			"total:FWD" : 10,
+			"total:READS" : 12,
+			"total:REV" : 2
+		}
+	},
+	"reference" : "/Users/schen6/Documents/human_genomes/grc38/with_decoy/genome.fa",
+	"sequencenames" : 
+	[
+		"ALT",
+		"REF"
+	],
+	"target_regions" : 
+	[
+		"chr1:939420-939720"
+	]
+}

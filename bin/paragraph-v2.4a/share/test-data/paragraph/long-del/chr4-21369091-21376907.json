@@ -1,0 +1,114 @@
+{
+    "edges": [
+        {
+            "from": "source",
+            "name": "source_ref-chr4:21376758-21376907",
+            "to": "ref-chr4:21376758-21376907"
+        },
+        {
+            "from": "source",
+            "name": "source_ref-chr4:21368941-21369090",
+            "to": "ref-chr4:21368941-21369090"
+        },
+        {
+            "from": "ref-chr4:21376758-21376907",
+            "name": "ref-chr4:21376758-21376907_ref-chr4:21376908-21377057",
+            "sequences": [
+                "REF"
+            ],
+            "to": "ref-chr4:21376908-21377057"
+        },
+        {
+            "from": "ref-chr4:21368941-21369090",
+            "name": "ref-chr4:21368941-21369090_ref-chr4:21369091-21369091",
+            "sequences": [
+                "REF"
+            ],
+            "to": "ref-chr4:21369091-21369091"
+        },
+        {
+            "from": "ref-chr4:21369091-21369091",
+            "name": "ref-chr4:21369091-21369091_ref-chr4:21376908-21377057",
+            "sequences": [
+                "ALT"
+            ],
+            "to": "ref-chr4:21376908-21377057"
+        },
+        {
+            "from": "ref-chr4:21369091-21369091",
+            "name": "ref-chr4:21369091-21369091_ref-chr4:21369092-21369241",
+            "sequences": [
+                "REF"
+            ],
+            "to": "ref-chr4:21369092-21369241"
+        },
+        {
+            "from": "ref-chr4:21376908-21377057",
+            "name": "ref-chr4:21376908-21377057_sink",
+            "to": "sink"
+        },
+        {
+            "from": "ref-chr4:21369092-21369241",
+            "name": "ref-chr4:21369092-21369241_sink",
+            "to": "sink"
+        }
+    ],
+    "model_name": "Graph from /Users/schen6/Documents/paragraph-tools/share/test-data/paragraph/long-del/chr4-21369091-21376907.vcf",
+    "nodes": [
+        {
+            "name": "source",
+            "sequence": "NNNNNNNNNN"
+        },
+        {
+            "name": "ref-chr4:21376758-21376907",
+            "reference": "chr4:21376758-21376907"
+        },
+        {
+            "name": "ref-chr4:21368941-21369090",
+            "reference": "chr4:21368941-21369090"
+        },
+        {
+            "name": "ref-chr4:21369091-21369091",
+            "reference": "chr4:21369091-21369091"
+        },
+        {
+            "name": "ref-chr4:21376908-21377057",
+            "reference": "chr4:21376908-21377057"
+        },
+        {
+            "name": "ref-chr4:21369092-21369241",
+            "reference": "chr4:21369092-21369241"
+        },
+        {
+            "name": "sink",
+            "sequence": "NNNNNNNNNN"
+        }
+    ],
+    "paths": [
+        {
+            "nodes": [
+                "ref-chr4:21376758-21376907",
+                "ref-chr4:21376908-21377057"
+            ],
+            "path_id": "REF|1",
+            "sequence": "REF"
+        },
+        {
+            "nodes": [
+                "ref-chr4:21368941-21369090",
+                "ref-chr4:21369091-21369091",
+                "ref-chr4:21369092-21369241"
+            ],
+            "path_id": "REF|2",
+            "sequence": "REF"
+        }
+    ],
+    "sequencenames": [
+        "ALT",
+        "REF"
+    ],
+    "target_regions": [
+        "chr4:21368941-21369241",
+        "chr4:21376758-21377057"
+    ]
+}

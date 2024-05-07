@@ -1,0 +1,316 @@
+{
+    "edges": [
+        {
+            "from": "source",
+            "name": "source_ref-chr1:46556746-46556896",
+            "to": "ref-chr1:46556746-46556896"
+        },
+        {
+            "from": "ref-chr1:46556746-46556896",
+            "name": "ref-chr1:46556746-46556896_ref-chr1:46556897-46556899",
+            "sequences": [
+                "REF",
+                "chr1:46556896-1:0"
+            ],
+            "to": "ref-chr1:46556897-46556899"
+        },
+        {
+            "from": "ref-chr1:46556746-46556896",
+            "name": "ref-chr1:46556746-46556896_ref-chr1:46556909-46556909",
+            "sequences": [
+                "chr1:46556896-1:1"
+            ],
+            "to": "ref-chr1:46556909-46556909"
+        },
+        {
+            "from": "ref-chr1:46556897-46556899",
+            "name": "ref-chr1:46556897-46556899_ref-chr1:46556900-46556901",
+            "sequences": [
+                "REF",
+                "chr1:46556896-1:0",
+                "chr1:46556899-1:0"
+            ],
+            "to": "ref-chr1:46556900-46556901"
+        },
+        {
+            "from": "ref-chr1:46556897-46556899",
+            "name": "ref-chr1:46556897-46556899_ref-chr1:46556902-46556903",
+            "sequences": [
+                "chr1:46556899-1:1"
+            ],
+            "to": "ref-chr1:46556902-46556903"
+        },
+        {
+            "from": "ref-chr1:46556900-46556901",
+            "name": "ref-chr1:46556900-46556901_ref-chr1:46556902-46556903",
+            "sequences": [
+                "REF",
+                "chr1:46556896-1:0",
+                "chr1:46556899-1:0"
+            ],
+            "to": "ref-chr1:46556902-46556903"
+        },
+        {
+            "from": "ref-chr1:46556902-46556903",
+            "name": "ref-chr1:46556902-46556903_ref-chr1:46556904-46556908",
+            "sequences": [
+                "REF",
+                "chr1:46556896-1:0",
+                "chr1:46556903-1:0"
+            ],
+            "to": "ref-chr1:46556904-46556908"
+        },
+        {
+            "from": "ref-chr1:46556902-46556903",
+            "name": "ref-chr1:46556902-46556903_ref-chr1:46556910-46556912",
+            "sequences": [
+                "chr1:46556903-1:1"
+            ],
+            "to": "ref-chr1:46556910-46556912"
+        },
+        {
+            "from": "ref-chr1:46556904-46556908",
+            "name": "ref-chr1:46556904-46556908_ref-chr1:46556909-46556909",
+            "sequences": [
+                "REF",
+                "chr1:46556896-1:0",
+                "chr1:46556903-1:0"
+            ],
+            "to": "ref-chr1:46556909-46556909"
+        },
+        {
+            "from": "ref-chr1:46556909-46556909",
+            "name": "ref-chr1:46556909-46556909_ref-chr1:46556910-46556912",
+            "sequences": [
+                "REF",
+                "chr1:46556903-1:0"
+            ],
+            "to": "ref-chr1:46556910-46556912"
+        },
+        {
+            "from": "ref-chr1:46556910-46556912",
+            "name": "ref-chr1:46556910-46556912_ref-chr1:46556913-46556913",
+            "sequences": [
+                "REF",
+                "chr1:46556913-1:0"
+            ],
+            "to": "ref-chr1:46556913-46556913"
+        },
+        {
+            "from": "ref-chr1:46556910-46556912",
+            "name": "ref-chr1:46556910-46556912_chr1:46556913-46556913:A",
+            "sequences": [
+                "chr1:46556913-1:1"
+            ],
+            "to": "chr1:46556913-46556913:A"
+        },
+        {
+            "from": "ref-chr1:46556913-46556913",
+            "name": "ref-chr1:46556913-46556913_chr1:46556914-46556914:A",
+            "sequences": [
+                "chr1:46556913-1:0",
+                "chr1:46556914-1:1"
+            ],
+            "to": "chr1:46556914-46556914:A"
+        },
+        {
+            "from": "ref-chr1:46556913-46556913",
+            "name": "ref-chr1:46556913-46556913_ref-chr1:46556914-46556914",
+            "sequences": [
+                "REF",
+                "chr1:46556913-1:0",
+                "chr1:46556914-1:0"
+            ],
+            "to": "ref-chr1:46556914-46556914"
+        },
+        {
+            "from": "chr1:46556914-46556914:A",
+            "name": "chr1:46556914-46556914:A_ref-chr1:46556915-46557858",
+            "sequences": [
+                "chr1:46556914-1:1"
+            ],
+            "to": "ref-chr1:46556915-46557858"
+        },
+        {
+            "from": "chr1:46556913-46556913:A",
+            "name": "chr1:46556913-46556913:A_ref-chr1:46556914-46556914",
+            "sequences": [
+                "chr1:46556913-1:1",
+                "chr1:46556914-1:0"
+            ],
+            "to": "ref-chr1:46556914-46556914"
+        },
+        {
+            "from": "ref-chr1:46556914-46556914",
+            "name": "ref-chr1:46556914-46556914_ref-chr1:46556915-46557858",
+            "sequences": [
+                "REF",
+                "chr1:46556914-1:0"
+            ],
+            "to": "ref-chr1:46556915-46557858"
+        },
+        {
+            "from": "ref-chr1:46556915-46557858",
+            "name": "ref-chr1:46556915-46557858_ref-chr1:46557859-46557859",
+            "sequences": [
+                "REF",
+                "chr1:46557859-1:0"
+            ],
+            "to": "ref-chr1:46557859-46557859"
+        },
+        {
+            "from": "ref-chr1:46556915-46557858",
+            "name": "ref-chr1:46556915-46557858_chr1:46557859-46557859:A",
+            "sequences": [
+                "chr1:46557859-1:1"
+            ],
+            "to": "chr1:46557859-46557859:A"
+        },
+        {
+            "from": "ref-chr1:46557859-46557859",
+            "name": "ref-chr1:46557859-46557859_ref-chr1:46557860-46558009",
+            "sequences": [
+                "REF",
+                "chr1:46557859-1:0"
+            ],
+            "to": "ref-chr1:46557860-46558009"
+        },
+        {
+            "from": "chr1:46557859-46557859:A",
+            "name": "chr1:46557859-46557859:A_ref-chr1:46557860-46558009",
+            "sequences": [
+                "chr1:46557859-1:1"
+            ],
+            "to": "ref-chr1:46557860-46558009"
+        },
+        {
+            "from": "ref-chr1:46557860-46558009",
+            "name": "ref-chr1:46557860-46558009_sink",
+            "to": "sink"
+        }
+    ],
+    "model_name": "Graph from pg-complex/pg-complex.vcf",
+    "nodes": [
+        {
+            "name": "source",
+            "sequence": "NNNNNNNNNN"
+        },
+        {
+            "name": "ref-chr1:46556746-46556896",
+            "reference": "chr1:46556746-46556896",
+            "reference_sequence": "CCTCTCTGCCATCCCGAGGGAGAGCAGCTGTCATCAGCACCCAGTCCACTGCCCACTCAGACCTCCCTTGCCACCTCCTTGGGAACTTATAAAGGTCCTTTCCACCCCAGTCCTCTCCTGTCTGGCTCTGATGATCGCCTGGGACAATGGG"
+        },
+        {
+            "name": "ref-chr1:46556897-46556899",
+            "reference": "chr1:46556897-46556899",
+            "reference_sequence": "CAC"
+        },
+        {
+            "name": "ref-chr1:46556900-46556901",
+            "reference": "chr1:46556900-46556901",
+            "reference_sequence": "TT"
+        },
+        {
+            "name": "ref-chr1:46556902-46556903",
+            "reference": "chr1:46556902-46556903",
+            "reference_sequence": "TA"
+        },
+        {
+            "name": "ref-chr1:46556904-46556908",
+            "reference": "chr1:46556904-46556908",
+            "reference_sequence": "GTGCC"
+        },
+        {
+            "name": "ref-chr1:46556909-46556909",
+            "reference": "chr1:46556909-46556909",
+            "reference_sequence": "C"
+        },
+        {
+            "name": "ref-chr1:46556910-46556912",
+            "reference": "chr1:46556910-46556912",
+            "reference_sequence": "ACT"
+        },
+        {
+            "name": "ref-chr1:46556913-46556913",
+            "reference": "chr1:46556913-46556913",
+            "reference_sequence": "T"
+        },
+        {
+            "name": "chr1:46556914-46556914:A",
+            "position": "chr1:46556914-46556914",
+            "sequence": "A"
+        },
+        {
+            "name": "chr1:46556913-46556913:A",
+            "position": "chr1:46556913-46556913",
+            "sequence": "A"
+        },
+        {
+            "name": "ref-chr1:46556914-46556914",
+            "reference": "chr1:46556914-46556914",
+            "reference_sequence": "T"
+        },
+        {
+            "name": "ref-chr1:46556915-46557858",
+            "reference": "chr1:46556915-46557858",
+            "reference_sequence": "AGTCCTTTGCGTGATGTACATGAGGGCTGTGGATAGGAGGTGCTATTTTTCTTTGTTGCATAGTCCCGGGCACATGACACACCCTTGATAAAGGCTTAGTAATGCTTTAGACAGAGGAGAAATTTGTTTCCTGCTTGTGGGCTGCTGGGCACAGAGGACATCTATTAAAGTACATTCTGGTCTCCTGTGTCATGGTTGCTGACACCACCTCTACCACTTGATGGGGAGATCCTAGAAAGCAGAGGCTGTTTCTTACTCATTTCTGGGTCCTGGCTCAGAAGAAGCAATTGATAAAAGTTTGATGAATTTCATTTCCTCACCTAGGAAAAAAATAGCAATTTCTCCTTCACTTTGTTTTTTGGGTCAAATACGGTTTTTATTCAGGGGTCCCAATAAGAGATACCTTCTCCCCACCTGGCTGGACTTAGACCCAGTTTAGAAGGCCAGTCTCCTCCTCAGGTCTGCAGGTAAAAAAAAAAAAGGACCACCAAATAGGCCACACATAGAATTTCAGTTTTATTAAAATAAGCACAATGTATAAAAGCACCGTGGTGTTGTATAAACGTCTGCCTGACAAATGCAAATCTATTTTCTTTATGTAACTCAATAGTTCCACTTATCTGAATGGCTGTACCTTCATGCACACGGGCAGCAGGCACTGCATTGCTCAAACAGGGAAGTGAGGCTTCACCCTAGTGTGGCTTCACCTTAGGCACAGAGCACTATCTAACTGCCCAGATCTGTGCCACCCACACAAGACCTGGGGACACAGCAGCAGACACCGATGCTGTCTCTAAGTTCATCACAGGAACAGCTTAAAATCAGAATAATAGGGAACTGCTGATTAAAACCCAAGTGCATGGACATTCTAGAAAGAAGAGCAAGCCGTTCCACTCTCTGGGAAGTTCATGGGCTTGCAGTGGGAGTTTAAGGTATCATCTTTG"
+        },
+        {
+            "name": "ref-chr1:46557859-46557859",
+            "reference": "chr1:46557859-46557859",
+            "reference_sequence": "C"
+        },
+        {
+            "name": "chr1:46557859-46557859:A",
+            "position": "chr1:46557859-46557859",
+            "sequence": "A"
+        },
+        {
+            "name": "ref-chr1:46557860-46558009",
+            "reference": "chr1:46557860-46558009",
+            "reference_sequence": "TGGAACAGCATGGTTAAAAACACCAAACTTTTTTTTTAAAAAAACGATACTACTGACTTTAGCAGCAATCACAAACAAAGGGGATGATAAACGAGGGATACATTTCAGTCACAGCAAAGAAAGATTATGTGCTTTTCCGTGCTGCAGACC"
+        },
+        {
+            "name": "sink",
+            "sequence": "NNNNNNNNNN"
+        }
+    ],
+    "paths": [
+        {
+            "nodes": [
+                "ref-chr1:46556746-46556896",
+                "ref-chr1:46556897-46556899",
+                "ref-chr1:46556900-46556901",
+                "ref-chr1:46556902-46556903",
+                "ref-chr1:46556904-46556908",
+                "ref-chr1:46556909-46556909",
+                "ref-chr1:46556910-46556912",
+                "ref-chr1:46556913-46556913",
+                "ref-chr1:46556914-46556914",
+                "ref-chr1:46556915-46557858",
+                "ref-chr1:46557859-46557859",
+                "ref-chr1:46557860-46558009"
+            ],
+            "path_id": "REF|1",
+            "sequence": "REF"
+        }
+    ],
+    "sequencenames": [
+        "REF",
+        "chr1:46556896-1:0",
+        "chr1:46556896-1:1",
+        "chr1:46556899-1:0",
+        "chr1:46556899-1:1",
+        "chr1:46556903-1:0",
+        "chr1:46556903-1:1",
+        "chr1:46556913-1:0",
+        "chr1:46556913-1:1",
+        "chr1:46556914-1:0",
+        "chr1:46556914-1:1",
+        "chr1:46557859-1:0",
+        "chr1:46557859-1:1"
+    ],
+    "target_regions": [
+        "chr1:46556746-46558009"
+    ]
+}

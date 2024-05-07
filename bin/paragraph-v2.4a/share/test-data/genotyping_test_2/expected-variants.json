@@ -1,0 +1,362 @@
+[
+    {
+        "ID": "swaps.vcf@42527ba8a8840f1c955f8e6879b567988bbf858febd25ba5b4555895dbbcfef7:1",
+        "chrom": "chrA",
+        "end": 1659,
+        "graph": {
+            "edges": [
+                {
+                    "from": "source",
+                    "name": "source_ref-chrA:1350-1502",
+                    "to": "ref-chrA:1350-1502"
+                },
+                {
+                    "from": "ref-chrA:1350-1502",
+                    "name": "ref-chrA:1350-1502_chrA:1503-1506:AGTAA",
+                    "sequences": [
+                        "swap1:1"
+                    ],
+                    "to": "chrA:1503-1506:AGTAA"
+                },
+                {
+                    "from": "ref-chrA:1350-1502",
+                    "name": "ref-chrA:1350-1502_ref-chrA:1503-1506",
+                    "sequences": [
+                        "REF",
+                        "swap1:0"
+                    ],
+                    "to": "ref-chrA:1503-1506"
+                },
+                {
+                    "from": "chrA:1503-1506:AGTAA",
+                    "name": "chrA:1503-1506:AGTAA_ref-chrA:1507-1509",
+                    "sequences": [
+                        "swap1:1"
+                    ],
+                    "to": "ref-chrA:1507-1509"
+                },
+                {
+                    "from": "ref-chrA:1503-1506",
+                    "name": "ref-chrA:1503-1506_ref-chrA:1507-1509",
+                    "sequences": [
+                        "REF",
+                        "swap1:0"
+                    ],
+                    "to": "ref-chrA:1507-1509"
+                },
+                {
+                    "from": "ref-chrA:1507-1509",
+                    "name": "ref-chrA:1507-1509_ref-chrA:1510-1659",
+                    "sequences": [
+                        "REF",
+                        "swap1:0",
+                        "swap1:1"
+                    ],
+                    "to": "ref-chrA:1510-1659"
+                },
+                {
+                    "from": "ref-chrA:1510-1659",
+                    "name": "ref-chrA:1510-1659_sink",
+                    "to": "sink"
+                }
+            ],
+            "nodes": [
+                {
+                    "name": "source",
+                    "sequence": "NNNNNNNNNN"
+                },
+                {
+                    "name": "ref-chrA:1350-1502",
+                    "reference": "chrA:1350-1502"
+                },
+                {
+                    "name": "chrA:1503-1506:AGTAA",
+                    "position": "chrA:1503-1506",
+                    "sequence": "AGTAA"
+                },
+                {
+                    "name": "ref-chrA:1503-1506",
+                    "reference": "chrA:1503-1506"
+                },
+                {
+                    "name": "ref-chrA:1507-1509",
+                    "reference": "chrA:1507-1509"
+                },
+                {
+                    "name": "ref-chrA:1510-1659",
+                    "reference": "chrA:1510-1659"
+                },
+                {
+                    "name": "sink",
+                    "sequence": "NNNNNNNNNN"
+                }
+            ],
+            "paths": [
+                {
+                    "nodes": [
+                        "ref-chrA:1350-1502",
+                        "ref-chrA:1503-1506",
+                        "ref-chrA:1507-1509",
+                        "ref-chrA:1510-1659"
+                    ],
+                    "path_id": "REF|1",
+                    "sequence": "REF"
+                },
+                {
+                    "nodes": [
+                        "ref-chrA:1350-1502",
+                        "chrA:1503-1506:AGTAA",
+                        "ref-chrA:1507-1509"
+                    ],
+                    "path_id": "ALT|1",
+                    "sequence": "ALT"
+                }
+            ],
+            "sequencenames": [
+                "ALT",
+                "REF",
+                "swap1:0",
+                "swap1:1"
+            ],
+            "target_regions": [
+                "chrA:1350-1659"
+            ]
+        },
+        "start": 1350
+    },
+    {
+        "ID": "swaps.vcf@42527ba8a8840f1c955f8e6879b567988bbf858febd25ba5b4555895dbbcfef7:2",
+        "chrom": "chrB",
+        "end": 1659,
+        "graph": {
+            "edges": [
+                {
+                    "from": "source",
+                    "name": "source_ref-chrB:1349-1499",
+                    "to": "ref-chrB:1349-1499"
+                },
+                {
+                    "from": "ref-chrB:1349-1499",
+                    "name": "ref-chrB:1349-1499_chrB:1500-1509:TCAGGTTGTCTTATGCTTGGCATCGTTCTT",
+                    "sequences": [
+                        "swap2:1"
+                    ],
+                    "to": "chrB:1500-1509:TCAGGTTGTCTTATGCTTGGCATCGTTCTT"
+                },
+                {
+                    "from": "ref-chrB:1349-1499",
+                    "name": "ref-chrB:1349-1499_ref-chrB:1500-1509",
+                    "sequences": [
+                        "REF",
+                        "swap2:0"
+                    ],
+                    "to": "ref-chrB:1500-1509"
+                },
+                {
+                    "from": "chrB:1500-1509:TCAGGTTGTCTTATGCTTGGCATCGTTCTT",
+                    "name": "chrB:1500-1509:TCAGGTTGTCTTATGCTTGGCATCGTTCTT_ref-chrB:1510-1659",
+                    "sequences": [
+                        "swap2:1"
+                    ],
+                    "to": "ref-chrB:1510-1659"
+                },
+                {
+                    "from": "ref-chrB:1500-1509",
+                    "name": "ref-chrB:1500-1509_ref-chrB:1510-1659",
+                    "sequences": [
+                        "REF",
+                        "swap2:0"
+                    ],
+                    "to": "ref-chrB:1510-1659"
+                },
+                {
+                    "from": "ref-chrB:1510-1659",
+                    "name": "ref-chrB:1510-1659_sink",
+                    "to": "sink"
+                }
+            ],
+            "nodes": [
+                {
+                    "name": "source",
+                    "sequence": "NNNNNNNNNN"
+                },
+                {
+                    "name": "ref-chrB:1349-1499",
+                    "reference": "chrB:1349-1499"
+                },
+                {
+                    "name": "chrB:1500-1509:TCAGGTTGTCTTATGCTTGGCATCGTTCTT",
+                    "position": "chrB:1500-1509",
+                    "sequence": "TCAGGTTGTCTTATGCTTGGCATCGTTCTT"
+                },
+                {
+                    "name": "ref-chrB:1500-1509",
+                    "reference": "chrB:1500-1509"
+                },
+                {
+                    "name": "ref-chrB:1510-1659",
+                    "reference": "chrB:1510-1659"
+                },
+                {
+                    "name": "sink",
+                    "sequence": "NNNNNNNNNN"
+                }
+            ],
+            "paths": [
+                {
+                    "nodes": [
+                        "ref-chrB:1349-1499",
+                        "ref-chrB:1500-1509",
+                        "ref-chrB:1510-1659"
+                    ],
+                    "path_id": "REF|1",
+                    "sequence": "REF"
+                },
+                {
+                    "nodes": [
+                        "ref-chrB:1349-1499",
+                        "chrB:1500-1509:TCAGGTTGTCTTATGCTTGGCATCGTTCTT",
+                        "ref-chrB:1510-1659"
+                    ],
+                    "path_id": "ALT|1",
+                    "sequence": "ALT"
+                }
+            ],
+            "sequencenames": [
+                "ALT",
+                "REF",
+                "swap2:0",
+                "swap2:1"
+            ],
+            "target_regions": [
+                "chrB:1349-1659"
+            ]
+        },
+        "start": 1349
+    },
+    {
+        "ID": "swaps.vcf@42527ba8a8840f1c955f8e6879b567988bbf858febd25ba5b4555895dbbcfef7:3",
+        "chrom": "chrC",
+        "end": 1849,
+        "graph": {
+            "edges": [
+                {
+                    "from": "source",
+                    "name": "source_ref-chrC:1350-1500",
+                    "to": "ref-chrC:1350-1500"
+                },
+                {
+                    "from": "ref-chrC:1350-1500",
+                    "name": "ref-chrC:1350-1500_chrC:1501-1697:CGGAGATACCCTCTGTCTCCGCTAACATTTCCCCGCGGACAAAATTTGTCGGCTGGGAGGAATAGGTGCAAACGCATAATATACCCCTCTTACTTTTTGTTAGGGTCTAGTCCGAATCTAAAAAATGACTAAGGACTCTCAGAGTGATGGATATATGCCTCGCGACGCCGATCTGTGCTTATGTCGCAGCTTTGGCATCAAACCAGTTTCACATACCCTGCCTAAAAGATTCCCATACTGCGAAATCGCAAGATTGTACAAGTTGTAGTCTGTGCGCCAGCGTGAGCACGGCACTCG",
+                    "sequences": [
+                        "swap3:1"
+                    ],
+                    "to": "chrC:1501-1697:CGGAGATACCCTCTGTCTCCGCTAACATTTCCCCGCGGACAAAATTTGTCGGCTGGGAGGAATAGGTGCAAACGCATAATATACCCCTCTTACTTTTTGTTAGGGTCTAGTCCGAATCTAAAAAATGACTAAGGACTCTCAGAGTGATGGATATATGCCTCGCGACGCCGATCTGTGCTTATGTCGCAGCTTTGGCATCAAACCAGTTTCACATACCCTGCCTAAAAGATTCCCATACTGCGAAATCGCAAGATTGTACAAGTTGTAGTCTGTGCGCCAGCGTGAGCACGGCACTCG"
+                },
+                {
+                    "from": "ref-chrC:1350-1500",
+                    "name": "ref-chrC:1350-1500_ref-chrC:1501-1697",
+                    "sequences": [
+                        "REF",
+                        "swap3:0"
+                    ],
+                    "to": "ref-chrC:1501-1697"
+                },
+                {
+                    "from": "chrC:1501-1697:CGGAGATACCCTCTGTCTCCGCTAACATTTCCCCGCGGACAAAATTTGTCGGCTGGGAGGAATAGGTGCAAACGCATAATATACCCCTCTTACTTTTTGTTAGGGTCTAGTCCGAATCTAAAAAATGACTAAGGACTCTCAGAGTGATGGATATATGCCTCGCGACGCCGATCTGTGCTTATGTCGCAGCTTTGGCATCAAACCAGTTTCACATACCCTGCCTAAAAGATTCCCATACTGCGAAATCGCAAGATTGTACAAGTTGTAGTCTGTGCGCCAGCGTGAGCACGGCACTCG",
+                    "name": "chrC:1501-1697:CGGAGATACCCTCTGTCTCCGCTAACATTTCCCCGCGGACAAAATTTGTCGGCTGGGAGGAATAGGTGCAAACGCATAATATACCCCTCTTACTTTTTGTTAGGGTCTAGTCCGAATCTAAAAAATGACTAAGGACTCTCAGAGTGATGGATATATGCCTCGCGACGCCGATCTGTGCTTATGTCGCAGCTTTGGCATCAAACCAGTTTCACATACCCTGCCTAAAAGATTCCCATACTGCGAAATCGCAAGATTGTACAAGTTGTAGTCTGTGCGCCAGCGTGAGCACGGCACTCG_ref-chrC:1698-1699",
+                    "sequences": [
+                        "swap3:1"
+                    ],
+                    "to": "ref-chrC:1698-1699"
+                },
+                {
+                    "from": "ref-chrC:1501-1697",
+                    "name": "ref-chrC:1501-1697_ref-chrC:1698-1699",
+                    "sequences": [
+                        "REF",
+                        "swap3:0"
+                    ],
+                    "to": "ref-chrC:1698-1699"
+                },
+                {
+                    "from": "ref-chrC:1698-1699",
+                    "name": "ref-chrC:1698-1699_ref-chrC:1700-1849",
+                    "sequences": [
+                        "REF",
+                        "swap3:0",
+                        "swap3:1"
+                    ],
+                    "to": "ref-chrC:1700-1849"
+                },
+                {
+                    "from": "ref-chrC:1700-1849",
+                    "name": "ref-chrC:1700-1849_sink",
+                    "to": "sink"
+                }
+            ],
+            "nodes": [
+                {
+                    "name": "source",
+                    "sequence": "NNNNNNNNNN"
+                },
+                {
+                    "name": "ref-chrC:1350-1500",
+                    "reference": "chrC:1350-1500"
+                },
+                {
+                    "name": "chrC:1501-1697:CGGAGATACCCTCTGTCTCCGCTAACATTTCCCCGCGGACAAAATTTGTCGGCTGGGAGGAATAGGTGCAAACGCATAATATACCCCTCTTACTTTTTGTTAGGGTCTAGTCCGAATCTAAAAAATGACTAAGGACTCTCAGAGTGATGGATATATGCCTCGCGACGCCGATCTGTGCTTATGTCGCAGCTTTGGCATCAAACCAGTTTCACATACCCTGCCTAAAAGATTCCCATACTGCGAAATCGCAAGATTGTACAAGTTGTAGTCTGTGCGCCAGCGTGAGCACGGCACTCG",
+                    "position": "chrC:1501-1697",
+                    "sequence": "CGGAGATACCCTCTGTCTCCGCTAACATTTCCCCGCGGACAAAATTTGTCGGCTGGGAGGAATAGGTGCAAACGCATAATATACCCCTCTTACTTTTTGTTAGGGTCTAGTCCGAATCTAAAAAATGACTAAGGACTCTCAGAGTGATGGATATATGCCTCGCGACGCCGATCTGTGCTTATGTCGCAGCTTTGGCATCAAACCAGTTTCACATACCCTGCCTAAAAGATTCCCATACTGCGAAATCGCAAGATTGTACAAGTTGTAGTCTGTGCGCCAGCGTGAGCACGGCACTCG"
+                },
+                {
+                    "name": "ref-chrC:1501-1697",
+                    "reference": "chrC:1501-1697"
+                },
+                {
+                    "name": "ref-chrC:1698-1699",
+                    "reference": "chrC:1698-1699"
+                },
+                {
+                    "name": "ref-chrC:1700-1849",
+                    "reference": "chrC:1700-1849"
+                },
+                {
+                    "name": "sink",
+                    "sequence": "NNNNNNNNNN"
+                }
+            ],
+            "paths": [
+                {
+                    "nodes": [
+                        "ref-chrC:1350-1500",
+                        "ref-chrC:1501-1697",
+                        "ref-chrC:1698-1699",
+                        "ref-chrC:1700-1849"
+                    ],
+                    "path_id": "REF|1",
+                    "sequence": "REF"
+                },
+                {
+                    "nodes": [
+                        "ref-chrC:1350-1500",
+                        "chrC:1501-1697:CGGAGATACCCTCTGTCTCCGCTAACATTTCCCCGCGGACAAAATTTGTCGGCTGGGAGGAATAGGTGCAAACGCATAATATACCCCTCTTACTTTTTGTTAGGGTCTAGTCCGAATCTAAAAAATGACTAAGGACTCTCAGAGTGATGGATATATGCCTCGCGACGCCGATCTGTGCTTATGTCGCAGCTTTGGCATCAAACCAGTTTCACATACCCTGCCTAAAAGATTCCCATACTGCGAAATCGCAAGATTGTACAAGTTGTAGTCTGTGCGCCAGCGTGAGCACGGCACTCG",
+                        "ref-chrC:1698-1699"
+                    ],
+                    "path_id": "ALT|1",
+                    "sequence": "ALT"
+                }
+            ],
+            "sequencenames": [
+                "ALT",
+                "REF",
+                "swap3:0",
+                "swap3:1"
+            ],
+            "target_regions": [
+                "chrC:1350-1849"
+            ]
+        },
+        "start": 1350
+    }
+]

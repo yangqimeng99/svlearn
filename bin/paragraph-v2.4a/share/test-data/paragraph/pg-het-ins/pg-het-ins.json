@@ -1,0 +1,79 @@
+{
+    "edges": [
+        {
+            "from": "source",
+            "name": "source_ref-chr1:939420-939570",
+            "to": "ref-chr1:939420-939570"
+        },
+        {
+            "from": "ref-chr1:939420-939570",
+            "name": "ref-chr1:939420-939570_chr1:939571-939570:CCCTGGAGGACC",
+            "sequences": [
+                "ALT"
+            ],
+            "to": "chr1:939571-939570:CCCTGGAGGACC"
+        },
+        {
+            "from": "ref-chr1:939420-939570",
+            "name": "ref-chr1:939420-939570_ref-chr1:939571-939720",
+            "sequences": [
+                "REF"
+            ],
+            "to": "ref-chr1:939571-939720"
+        },
+        {
+            "from": "chr1:939571-939570:CCCTGGAGGACC",
+            "name": "chr1:939571-939570:CCCTGGAGGACC_ref-chr1:939571-939720",
+            "sequences": [
+                "ALT"
+            ],
+            "to": "ref-chr1:939571-939720"
+        },
+        {
+            "from": "ref-chr1:939571-939720",
+            "name": "ref-chr1:939571-939720_sink",
+            "to": "sink"
+        }
+    ],
+    "model_name": "Graph from pg-het-ins/pg-het-ins.vcf",
+    "nodes": [
+        {
+            "name": "source",
+            "sequence": "NNNNNNNNNN"
+        },
+        {
+            "name": "ref-chr1:939420-939570",
+            "reference": "chr1:939420-939570"
+        },
+        {
+            "name": "chr1:939571-939570:CCCTGGAGGACC",
+            "position": "chr1:939571-939570",
+            "sequence": "CCCTGGAGGACC"
+        },
+        {
+            "name": "ref-chr1:939571-939720",
+            "reference": "chr1:939571-939720"
+        },
+        {
+            "name": "sink",
+            "sequence": "NNNNNNNNNN"
+        }
+    ],
+    "paths": [
+        {
+            "nodes": [
+                "ref-chr1:939420-939570",
+                "ref-chr1:939571-939720"
+            ],
+            "path_id": "REF|1",
+            "sequence": "REF"
+        }
+    ],
+    "sequencenames": [
+        "ALT",
+        "REF"
+    ],
+    "target_regions": [
+        "chr1:939420-939720"
+    ]
+}
