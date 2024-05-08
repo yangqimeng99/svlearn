@@ -8,6 +8,9 @@ The following dependency software needs to be installed:
 2. [trf=4.09](https://tandem.bu.edu/trf/trf.html)
 3. [GenMap=1.3.0](https://github.com/cpockrandt/genmap)
 4. [BISER=1.4](https://github.com/0xTCG/biser)
+5. [bwa-mem2=2.2.1](https://github.com/bwa-mem2/bwa-mem2)
+6. [samtools>=1.17](https://github.com/samtools/samtools)
+7. [sambamba>=1.0.1](https://github.com/biod/sambamba)
 
 ## Python environment
 ```
@@ -16,3 +19,17 @@ conda activate svlearn
 ```
 
 ## Build
+Download the [Release](https://github.com/yangqimeng99/svlearn/releases) 
+```
+tar xvzf svlearn-0.0.1.tar.gz
+cd svlearn-0.0.1
+bash install.sh
+```
+or:
+```
+git clone https://github.com/yangqimeng99/svlearn.git
+cd svlearn
+bash install.sh
+```
+
+
