@@ -294,10 +294,12 @@ svlearn genotype \
         --paragraph_feature ../05.para_feature/sample1/para_feature.tsv \
         --name sample1 \
         --out sample1_svlearn_24feature_genotype.vcf
+
+cd ..
 ```
 
 **Output files:**
-`sample1_svlearn_18feature_genotype.vcf` and `sample1_svlearn_24feature_genotype.vcf`: SV genotyping result file for sample1 using different models.
+`06.genotype/sample1_svlearn_18feature_genotype.vcf` and `06.genotype/sample1_svlearn_24feature_genotype.vcf`: SV genotyping result file for sample1 using different models.
 
 ## Advanced usage
 ### Training new model
