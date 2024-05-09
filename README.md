@@ -43,10 +43,8 @@ Please adjust the **Input files** paths according to the actual situation.
 In this step, the input VCF file will be formatted and used to generate an alternative genome relative to the reference genome.
 
 **Input files:**
-```
-ref.fasta # Reference Genome
-sv.vcf    # SV Set
-```
+ * `ref.fasta`: Reference Genome
+ * `sv.vcf`   : SV Set
 Please note that the input file `sv.vcf` should adhere to the following requirements in VCF 4.0+ format:
   * The VCF file should include complete REF and ALT allele sequences in 4th and 5th columns(like Indel).
   * The INFO field must contain SVTYPE.
@@ -82,7 +80,8 @@ $tree 01.prepareAlt_output
 In this step, four external software tools are employed separately to extract the features of each SV from both the `ref.fasta` and `alt.fasta`. Afterward, the svFeature module of svlearn is used to integrate these extracted features.
 
 **Input files:**
-`ref.fasta` and `alt.fasta`
+ * `ref.fasta` and `alt.fasta`
+ * `ref_sorted_format_filtered_sv.vcf` and `alt_sorted_format_filtered_sv.bed`
 
 **Running:**
 ```
@@ -107,9 +106,9 @@ biser -o ref.fasta.masked.out -t 2 --gc-heap 32G ref.fasta.masked
 biser -o alt.fasta.masked.out -t 2 --gc-heap 32G alt.fasta.masked
 
 # 05.svlearn svFeature
-svlearn svFeature 
-        --ref_sv_vcf ../01.prepareAlt_output/ref_sorted_format_filtered_sv.vcf \
-        --alt_sv_bed ../01.prepareAlt_output/alt_sorted_format_filtered_sv.bed \
+svlearn svFeature \
+        --ref_sv_vcf ../01.prepareAlt_output/ref_sorted_format_filtered_sv.vcf \ # output of 1. Create Alt Genome
+        --alt_sv_bed ../01.prepareAlt_output/alt_sorted_format_filtered_sv.bed \ # output of 1. Create Alt Genome
         --ref_rm ref.fasta.out \ # 01.RepeatMasker output in ref.fasta
         --alt_rm alt.fasta.out \ # 01.RepeatMasker output in alt.fasta
         --ref_trf ref.trf.gff \
@@ -145,9 +144,7 @@ sample2_R2.fastq.gz
 
 **Running:**
 ```
-mkdir 03.mapping;cd 03.mapping
-mkdir 01.RefGenome 02.AltGenome
-
+mkdir 03.mapping;cd 03.mapping;mkdir 01.RefGenome 02.AltGenome
 
 # Index
 cd 01.RefGenome
@@ -157,12 +154,39 @@ bwa-mem2.avx512bw index alt.fasta
 
 # Reads mapping, only one sample is shown as an example, but multiple samples can be mapped in parallel
 cd 01.RefGenome
-bash /software/svlearn/script/genmap.sh ref.fasta ref.fasta.genmapK50E1
+bash /software/svlearn/script/bwa_dedup.sh sample1_R1.fastq.gz sample1_R2.fastq.gz ref.fasta sample1
+cd ../02.AltGenome
+bash /software/svlearn/script/bwa_dedup.sh sample1_R1.fastq.gz sample1_R2.fastq.gz alt.fasta sample1_alt
 
-
-
-
-
+cd ../..
 ```
 
+**Output files:**
+ * `03.mapping/01.RefGenome/sample1.dedup.sort.bam`: ref_bam
+ * `03.mapping/02.AltGenome/sample1_alt.dedup.sort.bam`: alt_bam
+
+### 4. Extract the alignment feature
+In this step, combine ref_bam and alt_bam to run `svlearn alignFeature` to obtain the alignment feature of each SV site for the genotyping sample.
+
+**Input files:**
+ * `ref.fasta` and `alt.fasta`
+ * `ref_sorted_format_filtered_sv.vcf` and `alt_sorted_format_filtered_sv.bed`
+ * `sample1.dedup.sort.bam` and `sample1_alt.dedup.sort.bam`
+
+**Running:**
+```
+mkdir 04.align_feature;cd 04.align_feature
+
+svlearn alignFeature \
+        --ref_fasta ref.fasta \
+        --alt_fasta alt.fasta \
+        --ref_sv_vcf ../01.prepareAlt_output/ref_sorted_format_filtered_sv.vcf \
+        --alt_sv_bed ../01.prepareAlt_output/alt_sorted_format_filtered_sv.bed \
+        --ref_bam ../03.mapping/01.RefGenome/sample1.dedup.sort.bam \
+        --alt_bam ../03.mapping/02.AltGenome/sample1_alt.dedup.sort.bam \
+        --threads 1 \
+        --out sample1
+```
+
+**Output files:**
 
