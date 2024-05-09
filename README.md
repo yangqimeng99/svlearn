@@ -45,10 +45,11 @@ In this step, the input VCF file will be formatted and used to generate an alter
 **Input files:**
  * `ref.fasta`: Reference Genome
  * `sv.vcf`   : SV Set
-Please note that the input file `sv.vcf` should adhere to the following requirements in VCF 4.0+ format:
-  * The VCF file should include complete REF and ALT allele sequences in 4th and 5th columns(like Indel).
-  * The INFO field must contain SVTYPE.
-  * Each SV should have a unique ID in 3th columns.
+
+**Please note:** The input file `sv.vcf` should adhere to the following requirements in VCF 4.0+ format:
+   (1) The VCF file should include complete REF and ALT allele sequences in 4th and 5th columns(like Indel).
+   (2) The INFO field must contain SVTYPE.
+   (3) Each SV should have a unique ID in 3th columns.
 
 **Running:**
 ```
@@ -122,7 +123,10 @@ svlearn svFeature \
 cd ..
 ```
 **Output files:**
-`02.SV.feature/sv_feature.tsv`: The feature matrix of the SV set
+`02.SV.feature/sv_feature.tsv`: The **SV feature** matrix file
+
+**Note:**
+The TRF2GFF.py script in the script/ directory comes from [Adam Taranto’s open-source project](https://github.com/Adamtaranto/TRF2GFF).
 
 ### 3. Reads mapping
 In this step, each sample’s short reads (fastq files) are separately linearly aligned to ref.fasta and alt.fasta to obtain each sample’s ref_bam and alt_bam.
@@ -165,7 +169,7 @@ cd ../..
  * `03.mapping/01.RefGenome/sample1.dedup.sort.bam`: ref_bam
  * `03.mapping/02.AltGenome/sample1_alt.dedup.sort.bam`: alt_bam
 
-### 4. Extract the alignment feature
+### 4. Extract the Alignment feature
 In this step, combine ref_bam and alt_bam to run `svlearn alignFeature` to obtain the alignment feature of each SV site for the genotyping sample.
 
 **Input files:**
@@ -186,7 +190,116 @@ svlearn alignFeature \
         --alt_bam ../03.mapping/02.AltGenome/sample1_alt.dedup.sort.bam \
         --threads 1 \
         --out sample1
+
+cd ..
 ```
 
 **Output files:**
+```
+$tree 04.align_feature/sample1/
+04.align_feature/sample1/
+├── BP_2Bam_result.tsv
+├── BreakPoint_ReadDepth_2Bam_feature.tsv
+└── RD_2Bam_result.tsv
+```
+ * `BP_2Bam_result.tsv`: Alignment feature based on breakpoint information
+ * `RD_2Bam_result.tsv`: Alignment feature based on read depth information
+ * `BreakPoint_ReadDepth_2Bam_feature.tsv`: The **alignment feature** matrix of the sample1
 
+**Note:**
+In the `svlearn alignFeature`, the [mosdepth](https://github.com/brentp/mosdepth) is called to calculate read depth. The SVLearn package includes a binary distribution of [mosdepth 0.3.7](https://github.com/brentp/mosdepth/releases/tag/v0.3.7), and we haven’t made any changes to its code.
+
+### 5. Extract the Paragraph feature (optional)
+In this step, run another genotyping tool [paragraph](https://github.com/Illumina/paragraph) separately on the ref bam and alt bam to obtain the paragraph feature of each SV site for the genotyping sample.
+
+**Input files:**
+ * `ref.fasta` and `alt.fasta`
+ * `ref_sorted_format_filtered_sv.vcf` and `alt_sorted_format_filtered_sv.vcf`
+ * `sample1.dedup.sort.bam` and `sample1_alt.dedup.sort.bam`
+
+**Running:**
+```
+mkdir 05.para_feature;cd 05.para_feature
+
+svlearn runParagraph \
+        --ref_fasta ref.fasta \
+        --alt_fasta alt.fasta \
+        --ref_sv_vcf ../01.prepareAlt_output/ref_sorted_format_filtered_sv.vcf \
+        --alt_sv_vcf ../01.prepareAlt_output/alt_sorted_format_filtered_sv.vcf \
+        --ref_bam ../03.mapping/01.RefGenome/sample1.dedup.sort.bam \
+        --alt_bam ../03.mapping/02.AltGenome/sample1_alt.dedup.sort.bam \
+        --threads 20 \
+        --out sample1
+
+cd ..
+```
+
+**Output files:**
+```
+$tree 05.para_feature/sample1/
+05.para_feature/sample1/
+├── alt.idxdepth.json
+├── alt.idxdepth.json.log
+├── alt.manifest
+├── alt_paragraph_out
+│   ├── genotypes.json.gz
+│   ├── genotypes.vcf.gz
+│   ├── grmpy.log
+│   ├── variants.json.gz
+│   └── variants.vcf.gz
+├── para_feature.tsv
+├── ref.idxdepth.json
+├── ref.idxdepth.json.idxdepth.log
+├── ref.manifest
+└── ref_paragraph_out
+    ├── genotypes.json.gz
+    ├── genotypes.vcf.gz
+    ├── grmpy.log
+    ├── variants.json.gz
+    └── variants.vcf.gz
+```
+ * `para_feature.tsv`: The **paragraph feature** matrix of the sample1
+ * other files: Paragraph’s output
+
+**Note:**
+In the `svlearn runParagraph`, the [Paragraph](https://github.com/Illumina/paragraph) is called twice to extract six paragraph features. The SVLearn package includes a binary distribution of [Paragraph v2.4a](https://github.com/Illumina/paragraph/releases/tag/v2.4a), and we haven’t made any changes to its code.
+
+### 6. Genotype
+In this step, the feature matrixs obtained from previous steps is integrated, and the [trained model]() is called to obtain the SV genotypes.
+
+**Input files:**
+ * `model.joblib`: trained model file
+ * `ref_sorted_format_filtered_sv.vcf`: output of **1. Create Alt Genome**
+ * `sv_feature.tsv`: output of **2. Extracting each SV feature**
+ * `BreakPoint_ReadDepth_2Bam_feature.tsv`: output of **4. Extract the Alignment feature**
+ * (optional) `para_feature.tsv`: output of **5. Extract the Paragraph feature**
+
+**Running:**
+```
+mkdir 06.genotype;cd 06.genotype
+
+# If you haven’t extracted paragraph features, please call the 18-feature model
+svlearn genotype \
+        --model model.joblib \
+        --sv_feature ../02.SV.feature/sv_feature.tsv \
+        --align_feature ../04.align_feature/sample1/BreakPoint_ReadDepth_2Bam_feature.tsv \
+        --name sample1 \
+        --out sample1_svlearn_18feature_genotype.vcf
+
+# If you have extracted paragraph features, please call the 24-feature model
+svlearn genotype \
+        --model model.joblib \
+        --sv_feature ../02.SV.feature/sv_feature.tsv \
+        --align_feature ../04.align_feature/sample1/BreakPoint_ReadDepth_2Bam_feature.tsv \
+        --paragraph_feature ../05.para_feature/sample1/para_feature.tsv \
+        --name sample1 \
+        --out sample1_svlearn_24feature_genotype.vcf
+```
+
+**Output files:**
+`sample1_svlearn_18feature_genotype.vcf` and `sample1_svlearn_24feature_genotype.vcf`: SV genotyping result file for sample1 using different models.
+
+## Advanced usage
+### Training new model
+
+### Benchmark
