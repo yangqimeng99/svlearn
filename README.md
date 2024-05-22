@@ -280,6 +280,7 @@ mkdir 06.genotype;cd 06.genotype
 
 # If you haven’t extracted paragraph features, please call the 18-feature model
 svlearn genotype \
+        --ref_sv_vcf ../01.prepareAlt_output/ref_sorted_format_filtered_sv.vcf \
         --model model.joblib \
         --sv_feature ../02.SV.feature/sv_feature.tsv \
         --align_feature ../04.align_feature/sample1/BreakPoint_ReadDepth_2Bam_feature.tsv \
@@ -288,6 +289,7 @@ svlearn genotype \
 
 # If you have extracted paragraph features, please call the 24-feature model
 svlearn genotype \
+        --ref_sv_vcf ../01.prepareAlt_output/ref_sorted_format_filtered_sv.vcf \
         --model model.joblib \
         --sv_feature ../02.SV.feature/sv_feature.tsv \
         --align_feature ../04.align_feature/sample1/BreakPoint_ReadDepth_2Bam_feature.tsv \
