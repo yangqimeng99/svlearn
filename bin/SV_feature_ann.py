@@ -43,23 +43,23 @@ def process_vcf_to_del_bed(ref_vcf):
 
 
 def filter_del(feature):
-    return "DEL" not in feature.fields[4]
+	return "DEL" not in feature.fields[4]
 
 
 def process_repeat_masker(data, repeat_type):
-    filtered_data = data[data[10].str.contains(repeat_type)].copy()
-    filtered_data.loc[:, 5] = filtered_data[5].astype(int)
-    filtered_data.loc[:, 6] = filtered_data[6].astype(int)
-    filtered_data.loc[:, 5] = filtered_data[5] - 1
-    
-    filtered_data_bed = filtered_data[[4, 5, 6]]
-    
-    bed = pybedtools.BedTool.from_dataframe(filtered_data_bed)
-    bed_sorted = bed.sort()
-    bed_merged = bed_sorted.merge()
+	filtered_data = data[data[10].str.contains(repeat_type)].copy()
+	filtered_data.loc[:, 5] = filtered_data[5].astype(int)
+	filtered_data.loc[:, 6] = filtered_data[6].astype(int)
+	filtered_data.loc[:, 5] = filtered_data[5] - 1
+	
+	filtered_data_bed = filtered_data[[4, 5, 6]]
+	
+	bed = pybedtools.BedTool.from_dataframe(filtered_data_bed)
+	bed_sorted = bed.sort()
+	bed_merged = bed_sorted.merge()
 
-    return bed_merged
-    
+	return bed_merged
+	
 
 # %%
 def process_biser_out(biser_file, Satellite_bed):
@@ -82,6 +82,7 @@ def process_biser_out(biser_file, Satellite_bed):
 	intersect_result = bed_a.intersect(Satellite_bed, wo=True).sort().groupby(g=[1,2,3,4,5,6], c=10, o=['sum']).to_dataframe()
 	intersect_result['overlap_ratio'] = intersect_result['thickStart'] / (intersect_result['end'] - intersect_result['start'])
 	filtered_overlap = intersect_result[intersect_result['overlap_ratio'] > 0.7]
+	filtered_overlap = filtered_overlap.astype({'chrom': 'str', 'name': 'str'})
 	merged_df = pd.merge(df, filtered_overlap, how='left', indicator=True,
 						left_on=[0, 1, 2, 3, 4, 5],
 						right_on=['chrom', 'start', 'end', 'name', 'score', 'strand'])
@@ -133,41 +134,41 @@ def svBed_intersect_Repeat(sv_bed, repeat_bed, repeat_type):
 
 
 def merge_dfs(left, right):
-    key = ['chr', 'start', 'end', 'sv_id', 'sv_type', 'sv_length']
-    return pd.merge(left, right, on=key, how='outer')
+	key = ['chr', 'start', 'end', 'sv_id', 'sv_type', 'sv_length']
+	return pd.merge(left, right, on=key, how='outer')
 
 
 
 def calculate_TE_class_content(row):
-    if row.iloc[6] / row.iloc[5] >= 0.8:
-        return pd.Series([1, row.iloc[6] / row.iloc[5]])
-    elif row.iloc[7] / row.iloc[5] >= 0.8:
-        return pd.Series([2, row.iloc[7] / row.iloc[5]])
-    elif row.iloc[8] / row.iloc[5] >= 0.8:
-        return pd.Series([3, row.iloc[8] / row.iloc[5]])
-    elif row.iloc[9] / row.iloc[5] >= 0.8:
-        return pd.Series([4, row.iloc[9] / row.iloc[5]])
-    elif (row.iloc[7] + row.iloc[8] + row.iloc[9] + row.iloc[6]) / row.iloc[5] >= 0.8:
-        return pd.Series([5, (row.iloc[7] + row.iloc[8] + row.iloc[9] + row.iloc[6]) / row.iloc[5]])
-    else:
-        return pd.Series([0, (row.iloc[7] + row.iloc[8] + row.iloc[9] + row.iloc[6]) / row.iloc[5]])
+	if row.iloc[6] / row.iloc[5] >= 0.8:
+		return pd.Series([1, row.iloc[6] / row.iloc[5]])
+	elif row.iloc[7] / row.iloc[5] >= 0.8:
+		return pd.Series([2, row.iloc[7] / row.iloc[5]])
+	elif row.iloc[8] / row.iloc[5] >= 0.8:
+		return pd.Series([3, row.iloc[8] / row.iloc[5]])
+	elif row.iloc[9] / row.iloc[5] >= 0.8:
+		return pd.Series([4, row.iloc[9] / row.iloc[5]])
+	elif (row.iloc[7] + row.iloc[8] + row.iloc[9] + row.iloc[6]) / row.iloc[5] >= 0.8:
+		return pd.Series([5, (row.iloc[7] + row.iloc[8] + row.iloc[9] + row.iloc[6]) / row.iloc[5]])
+	else:
+		return pd.Series([0, (row.iloc[7] + row.iloc[8] + row.iloc[9] + row.iloc[6]) / row.iloc[5]])
 
 def calculate_Satellite_class_content(row):
-    if row.iloc[6] / row.iloc[5] >= 0.8:
-        return pd.Series([6, row.iloc[6] / row.iloc[5]])
-    else:
-        return pd.Series([0, row.iloc[6] / row.iloc[5]])
+	if row.iloc[6] / row.iloc[5] >= 0.8:
+		return pd.Series([6, row.iloc[6] / row.iloc[5]])
+	else:
+		return pd.Series([0, row.iloc[6] / row.iloc[5]])
 
 def calculate_TRF_class_content(row):
-    if row.iloc[6] / row.iloc[5] >= 0.8:
-        return pd.Series([7, row.iloc[6] / row.iloc[5]])
-    elif row.iloc[7] / row.iloc[5] >= 0.8:
-        return pd.Series([8, row.iloc[7] / row.iloc[5]])
-    elif (row.iloc[6] + row.iloc[7]) / row.iloc[5] >= 0.8:
-        return pd.Series([9,(row.iloc[6] + row.iloc[7]) / row.iloc[5]])
-    else:
-        return pd.Series([0, (row.iloc[6] + row.iloc[7]) / row.iloc[5]])
-    
+	if row.iloc[6] / row.iloc[5] >= 0.8:
+		return pd.Series([7, row.iloc[6] / row.iloc[5]])
+	elif row.iloc[7] / row.iloc[5] >= 0.8:
+		return pd.Series([8, row.iloc[7] / row.iloc[5]])
+	elif (row.iloc[6] + row.iloc[7]) / row.iloc[5] >= 0.8:
+		return pd.Series([9,(row.iloc[6] + row.iloc[7]) / row.iloc[5]])
+	else:
+		return pd.Series([0, (row.iloc[6] + row.iloc[7]) / row.iloc[5]])
+	
 
 def sv_class_based_Repeats(sv_bed, RM_bed_dict, trf_VNTR_bed, trf_STR_bed):
 
@@ -231,29 +232,29 @@ def sv_class_based_onlyTRF(sv_bed, trf_bed):
 
 
 def parse_genmap_out(filepath):
-    with open(filepath, 'r') as file:
-        mappab_dict = {}
-        current_chr_name = None
-        current_chr_mappab = []
+	with open(filepath, 'r') as file:
+		mappab_dict = {}
+		current_chr_name = None
+		current_chr_mappab = []
 
-        for line in file:
-            line = line.strip()
-            if line.startswith('>'):
-                if current_chr_name is not None:
-                    mappab_dict[current_chr_name] = current_chr_mappab
-                    
-                current_chr_name = line[1:]
-                current_chr_mappab = []
-            else:
-                array1 = np.array(line.split(), dtype=np.int64)
-                array1[array1>255] = 255
-                array1 = np.array(array1, dtype=np.uint8)
-                current_chr_mappab = array1
+		for line in file:
+			line = line.strip()
+			if line.startswith('>'):
+				if current_chr_name is not None:
+					mappab_dict[current_chr_name] = current_chr_mappab
+					
+				current_chr_name = line[1:]
+				current_chr_mappab = []
+			else:
+				array1 = np.array(line.split(), dtype=np.int64)
+				array1[array1>255] = 255
+				array1 = np.array(array1, dtype=np.uint8)
+				current_chr_mappab = array1
 
-        if current_chr_name is not None:
-            mappab_dict[current_chr_name] = current_chr_mappab
+		if current_chr_name is not None:
+			mappab_dict[current_chr_name] = current_chr_mappab
 
-    return mappab_dict
+	return mappab_dict
 
 
 def out_mappab(mappab_dict, bed):
@@ -284,7 +285,7 @@ def main(args=None):
 
 	parser.add_argument("--ref_trf", type=str, required=True, help="The ref genome TRF output .gff file", metavar='file')
 	parser.add_argument("--alt_trf", type=str, required=True, help="The alt genome TRF output .gff file", metavar='file')
-     
+	 
 	parser.add_argument("--ref_genmap", type=str, required=True, help="The ref genome genmap output .txt file", metavar='file')
 	parser.add_argument("--alt_genmap", type=str, required=True, help="The alt genome genmap output .txt file", metavar='file')
 
@@ -292,7 +293,7 @@ def main(args=None):
 	parser.add_argument("--alt_biser", type=str, required=True, help="The alt genome BISER .out file", metavar='file')
 
 	parser.add_argument("-o", "--out", type=str, default="sv_feature.tsv", help="The output file name, default is: sv_feature.tsv", metavar='file')
-     
+	 
 
 	parsed_args = parser.parse_args(args=args)
 	ref_vcf_file = parsed_args.ref_sv_vcf
@@ -303,10 +304,10 @@ def main(args=None):
 
 	ref_RM_file = parsed_args.ref_rm
 	alt_RM_file = parsed_args.alt_rm
-     
+	 
 	ref_biser_file = parsed_args.ref_biser
 	alt_biser_file = parsed_args.alt_biser
-     
+	 
 	ref_trf_file = parsed_args.ref_trf
 	alt_trf_file = parsed_args.alt_trf
 	out_file = parsed_args.out
@@ -382,7 +383,7 @@ def main(args=None):
 
 	current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	print(current_time, "10. All annotation tasks have been completed.")
-     
+	 
 
 if __name__ == "__main__":
-    main()
+	main()

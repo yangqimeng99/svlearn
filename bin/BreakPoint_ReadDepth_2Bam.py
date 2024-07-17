@@ -273,14 +273,6 @@ def get_all_ref_depth(script_dir, ref_bam_file, out_file_prefix, ref_fasta_file,
 
 
 def get_output_file_path(output_dir_path, file_name):
-	"""
-	构建输出文件的完整路径
-	Args:
-		output_dir_path: 输出目录的路径
-		file_name: 输出文件名
-	Returns:
-		输出文件的完整路径
-	"""
 	return os.path.join(output_dir_path, file_name)
 
 def main(args=None):
