@@ -32,8 +32,8 @@ cd svlearn
 bash install.sh
 ```
 
-### Download the trained model
-
+### Download the [trained model](https://doi.org/10.5281/zenodo.11144997)
+Please select the corresponding coverage genotyping model to achieve the best genotyping results.
 
 ## Usage
 Before starting the SVLearn workflow, please ensure that all Requirements and SVLearn are configured in your environment.
@@ -264,8 +264,8 @@ $tree 05.para_feature/sample1/
 **Note:**
 In the `svlearn runParagraph`, the [Paragraph](https://github.com/Illumina/paragraph) is called twice to extract six paragraph features. The SVLearn package includes a binary distribution of [Paragraph v2.4a](https://github.com/Illumina/paragraph/releases/tag/v2.4a), and we haven’t made any changes to its code.
 
-### 6. Genotype
-In this step, the feature matrixs obtained from previous steps is integrated, and the [trained model]() is called to obtain the SV genotypes.
+### 6. Genotyping
+In this step, the feature matrixs obtained from previous steps is integrated, and the [trained model](https://doi.org/10.5281/zenodo.11144997) is called to obtain the SV genotypes.
 
 **Input files:**
  * `model.joblib`: trained model file
