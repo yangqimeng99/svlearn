@@ -305,5 +305,67 @@ cd ..
 
 ## Advanced usage
 ### Training new model
+Download the [prepared training dataset](https://doi.org/10.5281/zenodo.13309024) for human, cattle, or sheep.
+
+### 1. Prepare the training label file, tab-separated
+training_sample.true.gt.tsv
+```
+sv_id   GT_true
+INS.0   0/1
+DEL.0   0/0
+INS.1   1/1
+.....   .....
+```
+
+### 2. Generate the training matrix
+
+```
+# 18 features
+csvtk join -t -f 'sv_id' training_sample1.true.gt.tsv sv_feature.tsv training_sample1.BreakPoint_ReadDepth_2Bam_feature.tsv > training_sample1.18feature.training.tsv
+csvtk join -t -f 'sv_id' training_sample2.true.gt.tsv sv_feature.tsv training_sample2.BreakPoint_ReadDepth_2Bam_feature.tsv > training_sample2.18feature.training.tsv
+
+csvtk concat training_sample1.18feature.training.tsv training_sample2.18feature.training.tsv > sample1_2.18feature.training.tsv
+
+# 24 features
+csvtk join -t -f 'sv_id' training_sample1.true.gt.tsv sv_feature.tsv training_sample1.BreakPoint_ReadDepth_2Bam_feature.tsv training_sample1.para_feature.tsv > training_sample1.24feature.training.tsv
+csvtk join -t -f 'sv_id' training_sample2.true.gt.tsv sv_feature.tsv training_sample2.BreakPoint_ReadDepth_2Bam_feature.tsv training_sample2.para_feature.tsv > training_sample2.24feature.training.tsv
+
+csvtk concat training_sample1.24feature.training.tsv training_sample2.24feature.training.tsv > sample1_2.24feature.training.tsv
+```
+
+### 3. Training Model
+```
+# 18 features
+svlearn trainingModel \
+      --train_set sample1_2.18feature.training.tsv \
+      --train_model RandomForest \
+      --out RandomForest.18feature.model
+      --threads 64
+
+# 24 features
+svlearn trainingModel \
+      --train_set sample1_2.24feature.training.tsv \
+      --other_feature paragraph \
+      --train_model RandomForest \
+      --out RandomForest.24feature.model
+      --threads 64
+```
+**Output files:**
+`RandomForest.18feature.model` and `RandomForest.24feature.model` folders contain the .joblib files, which are the generated genotyping models.
 
 ### Benchmark
+SVLearn benchmark compares SV genotypes based on the unique IDs in the 3th columns of the true set and call set VCF files.
+
+Download the [prepared validation dataset](https://doi.org/10.5281/zenodo.13309024) for human, cattle, or sheep.
+```
+svlearn benchmark
+usage: svlearn benchmark [-h] -b file -c file -n1 str -n2 str [-o file]
+
+-h, --help                     show this help message and exit
+-b, --base_set file            True sv vcf set
+-c, --call_set file            Call sv vcf set
+-n1, --base_sample_name str    Sample name in true sv vcf set
+-n2, --call_sample_name str    Sample name in call sv vcf set
+-o, --out file                 The out of bechmark result, Default: benchmark.result.tsv
+```
+
