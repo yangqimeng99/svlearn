@@ -304,7 +304,8 @@ cd ..
 `06.genotype/sample1_svlearn_18feature_genotype.vcf` and `06.genotype/sample1_svlearn_24feature_genotype.vcf`: SV genotyping result file for sample1 using different models.
 
 ## Advanced usage
-### Training new model
+
+## Training new model
 Download the [prepared training dataset](https://doi.org/10.5281/zenodo.13309024) for human, cattle, or sheep.
 
 ### 1. Prepare the training label file, tab-separated
@@ -353,7 +354,7 @@ svlearn trainingModel \
 **Output files:**
 `RandomForest.18feature.model` and `RandomForest.24feature.model` folders contain the .joblib files, which are the generated genotyping models.
 
-### Benchmark
+## Benchmark
 SVLearn benchmark compares SV genotypes based on the unique IDs in the 3th columns of the true set and call set VCF files.
 
 Download the [prepared validation dataset](https://doi.org/10.5281/zenodo.13309024) for human, cattle, or sheep.
