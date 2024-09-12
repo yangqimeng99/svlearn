@@ -4,17 +4,25 @@ A machine learning-based genotyping tool for structural variation of short reads
 ## Installation
 SVLearn version 0.0.1 has undergone stability testing on Linux, including Ubuntu 20.04.3 and Red Hat Enterprise Linux 8.3 (Ootpa).
 
-Installing SVLearn and the required Python environment using conda/mamba is convenient and efficient. However, if you haven’t installed the dependency software beforehand, it may take around two hours to complete the installation of the required dependencies, as the Repeat Database required by RepeatMasker needs to be installed separately, and cannot be fully installed using conda alone.
+Installing SVLearn and the required Python environment using conda/mamba is convenient and efficient. Typically, the installation should not take more than half an hour.
 
 ### Requirements
-The following dependency software needs to be installed:
-1. [RepeatMasker>=4.1.5](https://www.repeatmasker.org/RepeatMasker/)
-2. [trf=4.09](https://tandem.bu.edu/trf/trf.html)
-3. [GenMap=1.3.0](https://github.com/cpockrandt/genmap)
-4. [BISER=1.4](https://github.com/0xTCG/biser)
-5. [bwa-mem2=2.2.1](https://github.com/bwa-mem2/bwa-mem2)
-6. [samtools>=1.17](https://github.com/samtools/samtools)
-7. [sambamba>=1.0.1](https://github.com/biod/sambamba)
+1. python=3.9
+2. pysam=0.22.0
+3. polars=0.20.15
+4. pandas=2.2.1
+5. scikit-learn=1.3.0
+6. pyfaidx
+7. pyarrow
+8. pybedtools
+9. intervaltree
+
+The following mapping software may need to be installed separately:
+
+10. [bwa-mem2=2.2.1](https://github.com/bwa-mem2/bwa-mem2) 
+11. [samtools>=1.17](https://github.com/samtools/samtools)
+12. [sambamba>=1.0.1](https://github.com/biod/sambamba)
+
 
 ### Python environment
 ```
@@ -43,6 +51,15 @@ bash install.sh
 
 ### Download the [trained model](https://doi.org/10.5281/zenodo.11144997)
 Please select the corresponding coverage genotyping model to achieve the best genotyping results.
+
+
+### Extra Requirements
+SVLearn has provided available SV datasets and their corresponding SV features for [three species](https://doi.org/10.5281/zenodo.13309024). If you need to extract SV features from new SV datasets, the following additional tools need to be installed:
+1. [RepeatMasker>=4.1.5](https://www.repeatmasker.org/RepeatMasker/)
+2. [trf=4.09](https://tandem.bu.edu/trf/trf.html)
+3. [GenMap=1.3.0](https://github.com/cpockrandt/genmap)
+4. [BISER=1.4](https://github.com/0xTCG/biser)
+
 
 ## Test
 Below are the steps to test whether SVLearn has been installed successfully.
