@@ -53,12 +53,55 @@ cd test
 bash test.sh
 ```
 
+## Demo
+We provide one sample dataset for each of the three species: human, cattle, and sheep, which can be used for demonstration and validation. You can download them from [here](https://doi.org/10.5281/zenodo.13309024).
 
-## Usage & Demo
+Here is an example demonstration using the human 24 feature dataset. The demonstration is expected to complete in approximately 3 minutes using a single CPU core and 16GB of memory.
+
+```
+svlearn genotype \
+      -v 02.SV-set_Genomes/human_ref_sorted_format_filtered_sv.vcf \
+      -m Human_30x_24feature_RandomForest_model.joblib \
+      -s 04.validation-dataset/human/Human_SV_Set-sv_feature.tsv \
+      -a 04.validation-dataset/human/HG002_30x/BreakPoint_ReadDepth_2Bam_feature.tsv \
+      -p 04.validation-dataset/human/HG002_30x/para_feature.tsv \
+      -n test
+
+svlearn benchmark \
+      -b 04.validation-dataset/human/Human_SV_Set-HG002_True_GT.vcf \
+      -c svlearn_genotype.vcf \
+      -n1 HG002 -n2 test
+```
+
+The above demonstration will generate two files:
+
+`svlearn_genotype.vcf`: The SV genotyping file output by SVLearn.
+
+`benchmark.result.tsv`: The genotyping performance of `svlearn_genotype.vcf` compared with the truth set, with the specific results as follows:
+```
+sv_set_number                 38613
+genotyped_sv_number           37021
+genotype_rate                 0.9588
+accuracy_genotyped_sv_number  32956
+precison_GT                   0.8292
+recall_GT                     0.7585
+f1_GT                         0.7922
+precison                      0.9209
+recall                        0.8424
+f1                            0.8799
+conc_00                       0.95
+conc_01                       0.7534
+conc_11                       0.8575
+wgc                           0.8537
+```
+**Note:**
+The `precision_GT`, `recall_GT`, and `f1_GT` metrics emphasize the genotyping performance when distinguishing between heterozygous and homozygous genotypes. 
+The `precision`, `recall`, and `f1` metrics focus on the presence or absence of variants in the genotyping results, without distinguishing between heterozygous and homozygous variants.
+
+
+## Usage
 Before starting the SVLearn workflow, please ensure that all Requirements and SVLearn are configured in your environment.
 Please adjust the **Input files** paths according to the actual situation.
-
-We provide one sample dataset for each of the three species: human, cattle, and sheep, which can be used for demonstration and validation. You can download them from [here](https://doi.org/10.5281/zenodo.13309024).
 
 ### 1. Create Alt Genome
 In this step, the input VCF file will be formatted and used to generate an alternative genome relative to the reference genome.
@@ -390,4 +433,3 @@ usage: svlearn benchmark [-h] -b file -c file -n1 str -n2 str [-o file]
 -n2, --call_sample_name str    Sample name in call sv vcf set
 -o, --out file                 The out of bechmark result, Default: benchmark.result.tsv
 ```
-
