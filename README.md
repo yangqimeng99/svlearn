@@ -2,6 +2,10 @@
 A machine learning-based genotyping tool for structural variation of short reads
 
 ## Installation
+SVLearn version 0.0.1 has undergone stability testing on Linux, including Ubuntu 20.04.3 and Red Hat Enterprise Linux 8.3 (Ootpa).
+
+Installing SVLearn and the required Python environment using conda/mamba is convenient and efficient. However, if you haven’t installed the dependency software beforehand, it may take around two hours to complete the installation of the required dependencies, as the Repeat Database required by RepeatMasker needs to be installed separately, and cannot be fully installed using conda alone.
+
 ### Requirements
 The following dependency software needs to be installed:
 1. [RepeatMasker>=4.1.5](https://www.repeatmasker.org/RepeatMasker/)
@@ -16,6 +20,11 @@ The following dependency software needs to be installed:
 ```
 conda create -n svlearn python=3.9 pysam=0.22.0 polars=0.20.15 pandas=2.2.1 scikit-learn=1.3.0 pyfaidx pyarrow bioconda::pybedtools conda-forge::intervaltree
 conda activate svlearn
+```
+or:
+```
+mamba create -n svlearn python=3.9 pysam=0.22.0 polars=0.20.15 pandas=2.2.1 scikit-learn=1.3.0 pyfaidx pyarrow bioconda::pybedtools conda-forge::intervaltree
+mamba activate svlearn
 ```
 
 ### Build
@@ -35,9 +44,21 @@ bash install.sh
 ### Download the [trained model](https://doi.org/10.5281/zenodo.11144997)
 Please select the corresponding coverage genotyping model to achieve the best genotyping results.
 
-## Usage
+## Test
+Below are the steps to test whether SVLearn has been installed successfully.
+
+If everything is working correctly, you will see the final output: `SVLearn test successful!`
+```
+cd test
+bash test.sh
+```
+
+
+## Usage & Demo
 Before starting the SVLearn workflow, please ensure that all Requirements and SVLearn are configured in your environment.
 Please adjust the **Input files** paths according to the actual situation.
+
+We provide one sample dataset for each of the three species: human, cattle, and sheep, which can be used for demonstration and validation. You can download them from [here](https://doi.org/10.5281/zenodo.13309024).
 
 ### 1. Create Alt Genome
 In this step, the input VCF file will be formatted and used to generate an alternative genome relative to the reference genome.
