@@ -7,7 +7,7 @@ if [ -z "$PYTHON_PATH" ]; then
     exit 1
 fi
 
-sed -i "1s|#!.*python3|#!$PYTHON_PATH|" ./bin/svlearn
+sed -i "1s|#!.*python[0-9.]*|#!$PYTHON_PATH|" ./bin/svlearn
 
 find ./bin/ -type f -exec chmod 755 {} \;
 

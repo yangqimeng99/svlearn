@@ -15,7 +15,7 @@ from functools import partial
 from datetime import datetime
 
 def filter_reads(segment):
-	if segment.mapping_quality > 0:
+	if segment.mapping_quality > 0 and not segment.is_duplicate:
 		return True
 	else:
 		return False
@@ -37,7 +37,7 @@ def output_reads_alin_info(sv_id, ref_bam, pse_bam, alt_sv_info, chrom, sv_start
 	clip_line = 3
 
 	for segment in ref_bam.fetch(chrom, start, end):
-		if segment.mapping_quality == 0 or segment.cigartuples is None:
+		if segment.mapping_quality == 0 or segment.is_duplicate or segment.cigartuples is None:
 			continue
 
 		query_name = segment.query_name
@@ -92,7 +92,7 @@ def output_reads_alin_info(sv_id, ref_bam, pse_bam, alt_sv_info, chrom, sv_start
 	pse_end = min(pse_sv_end + slop_len, alt_chr_len)
 
 	for segment in pse_bam.fetch(pse_chr, pse_start, pse_end):
-		if segment.mapping_quality == 0 or segment.cigartuples is None:
+		if segment.mapping_quality == 0 or segment.is_duplicate or segment.cigartuples is None:
 			continue
 		
 		query_name = segment.query_name
