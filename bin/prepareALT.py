@@ -9,23 +9,65 @@ import pandas as pd
 from pyfaidx import Fasta
 from datetime import datetime
 
-def check_vcf(vcf, ref_genome):
+def check_vcf(vcf, ref_genome, output_errors_vcf, output_filtered_vcf):
 	sv_ids = set()
+	errors = []  # Store tuples of error SVs and records
+	filtered_records = []  # Store records without errors SVs
+
 	for rec in vcf:
+		error_messages = []
 		svtype = rec.info.get('SVTYPE')
+		if isinstance(svtype, tuple):
+			svtype = svtype[0]
+
 		if svtype not in ['INS', 'DEL']:
-			raise ValueError(f"Error: At position {rec.chrom}:{rec.pos}, SV type is not INS or DEL.")
+			error_messages.append(f"Invalid SVTYPE: {svtype} (Expected_'INS'_or_'DEL')")
 
 		ref_seq = ref_genome.fetch(rec.chrom, rec.pos - 1, rec.stop).upper()
 		if rec.ref.upper() != ref_seq:
-			raise ValueError(f"Error: At position {rec.chrom}:{rec.pos}, REF sequence is incomplete or inconsistent with the genome sequence.")
+			error_messages.append("REF_sequence_inconsistent_with_genome_sequence")
 		elif rec.ref[0].upper() != rec.alts[0][0].upper():
-			raise ValueError(f"Error: At position {rec.chrom}:{rec.pos}, Different padding base for REF and ALT sequence.")
+			error_messages.append("Different_padding_base_for_REF_and_ALT_sequence")
 
 		sv_id = rec.id
 		if not sv_id or sv_id in sv_ids:
-			raise ValueError(f"Error: At position {rec.chrom}:{rec.pos}, SV ID either does not exist or is not unique.")
-		sv_ids.add(sv_id)
+			error_messages.append("SV_ID_either_does_not_exist_or_is_not_unique")
+		else:
+			sv_ids.add(sv_id)
+		
+		if error_messages:
+			errors.append((rec, error_messages))
+		else:
+			filtered_records.append(rec)
+
+	new_header = pysam.VariantHeader()
+	for rec in vcf.header.records:
+		if rec.type == "INFO" and rec["ID"] == "SVTYPE":
+			new_header.info.add("SVTYPE", 1, "String", "Type of structural variation")
+		else:	
+			new_header.add_record(rec)
+
+	for sample in vcf.header.samples:
+		new_header.add_sample(sample)
+
+	with pysam.VariantFile(output_filtered_vcf, 'w', header=new_header) as filtered_vcf:
+		for rec in filtered_records:
+			filtered_vcf.write(rec)
+	
+
+	if len(errors) > 0:
+		new_header.info.add("ERRORS", 1, "String", "Errors identified in this variant")
+		vcf.header.add_line("##INFO=<ID=ERRORS,Number=1,Type=String,Description='Errors identified in this variant'>")
+		with pysam.VariantFile(output_errors_vcf, 'w', header=new_header) as errors_vcf:
+			for rec, error_msgs in errors:
+				rec.info["ERRORS"] = ",".join(error_msgs)
+				errors_vcf.write(rec)
+
+	print(f"Finished processing. Errors found in {len(errors)} records.")
+	print(f"Output Errors records to: {output_errors_vcf}")
+	print(f"Output clean records to: {output_filtered_vcf}")
+	print("\n")
+
 
 def sort_vcf(input_vcf, output_sorted_vcf):
     """
@@ -56,8 +98,7 @@ def process_vcf(input_vcf_path, output_vcf_path):
 
 			output_vcf.write('\t'.join(line.strip().split('\t', 8)[:8]) + '\n')
 
-def filter_variants(input_vcf, out_clean_vcf, out_close_vcf, slop=75):
-	slop = int(slop)
+def filter_variants(input_vcf, out_clean_vcf, out_close_vcf, slop):
 	vcf = pysam.VariantFile(input_vcf)
 	variants = []
 	for record in vcf:
@@ -67,16 +108,14 @@ def filter_variants(input_vcf, out_clean_vcf, out_close_vcf, slop=75):
 	vcf.close()
 
 	df_variants = pd.DataFrame(variants, columns=['chrom', 'start', 'end', 'id'])
-	df_variants['start_slop'] = df_variants['start'] - slop
-	df_variants['end_slop'] = df_variants['end'] + slop
+
+	df_variants.sort_values(by=['chrom', 'start'], inplace=True)
+	df_variants['distance_to_next'] = df_variants.groupby('chrom')['start'].shift(-1) - df_variants['end']
+	df_variants['distance_to_previous'] = df_variants['start'] - df_variants.groupby('chrom')['end'].shift(1)
 	
-	df_variants.sort_values(by=['chrom', 'start_slop'], inplace=True)
-	df_variants['distance_to_next'] = df_variants.groupby('chrom')['start_slop'].shift(-1) - df_variants['end_slop']
-	df_variants['distance_to_previous'] = df_variants['start_slop'] - df_variants.groupby('chrom')['end_slop'].shift(1)
-	
-	filtered_variants = df_variants[((df_variants['distance_to_next'] > 150) | 
+	filtered_variants = df_variants[((df_variants['distance_to_next'] > slop) | 
 									 (df_variants['distance_to_next'].isnull())) & 
-									 ((df_variants['distance_to_previous'] > 150) | 
+									 ((df_variants['distance_to_previous'] > slop) | 
 									  (df_variants['distance_to_previous'].isnull()))]
 	filtered_variants_id_list = filtered_variants['id'].tolist()
 
@@ -105,7 +144,7 @@ def extract_alt_genome(input_filtered_vcf, input_fasta, output_alt_genome, outpu
 	ref_vcf.close()
 
 	no_sv_contigs = [seq for seq in contigs_names_in_fasta if seq not in contigs_names_in_vcf]
-	yes_sv_contigs = [seq for seq in contigs_names_in_fasta if seq in contigs_names_in_vcf]
+	# yes_sv_contigs = [seq for seq in contigs_names_in_fasta if seq in contigs_names_in_vcf]
 
 	current_chr = None
 	seq_len = 0
@@ -230,35 +269,37 @@ def main(args=None):
 
 	parser.add_argument("--ref_fasta", type=str, required=True, help="The Fasta file of ref genome", metavar="file")
 	parser.add_argument("--ref_sv_vcf", type=str, required=True, help="The SV VCF file based ref genome", metavar="file")
+	parser.add_argument("--min_distance", type=str, default="150", help="Filter out pairs of SVs that are less than this distance apart, default: 150", metavar="int")
 	parser.add_argument("-o", "--out", type=str, default="prepareAlt_output", help="The output dir name of prepareAlt", metavar="dir")
-
+	
+	# Debugging
+	# print("sys.argv:", sys.argv) 
 	parsed_args = parser.parse_args(args=args)
 	input_fasta = parsed_args.ref_fasta
 	input_vcf = parsed_args.ref_sv_vcf
 	output_dir = parsed_args.out
+	slop = max(int(parsed_args.min_distance), 0)
 
 	current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	print(current_time, "python version:", platform.python_version())
 
+	output_dir_path = os.path.abspath(output_dir)
+	os.makedirs(output_dir_path, exist_ok=True)
+
 	vcf = pysam.VariantFile(input_vcf)
 	fasta = pysam.FastaFile(input_fasta)
-	try:
-		check_vcf(vcf, fasta)
-	except ValueError as e:
-		print("VCF format wrong:", e)
-		exit(1)
 
+	output_errors_vcf = get_output_file_path(output_dir_path, "ref_errors.vcf")
+	output_clean_vcf = get_output_file_path(output_dir_path, "ref_clean.vcf")
+	check_vcf(vcf, fasta, output_errors_vcf, output_clean_vcf)
 	vcf.close()
 	fasta.close()
 
 	current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	print(current_time, "00. All records meet the conditions, the program continues to run.")
 
-	output_dir_path = os.path.abspath(output_dir)
-	os.makedirs(output_dir_path, exist_ok=True)
-
 	output_sorted_vcf_path = get_output_file_path(output_dir_path, "ref_sorted.vcf")
-	sort_vcf(input_vcf, output_sorted_vcf_path)
+	sort_vcf(output_clean_vcf, output_sorted_vcf_path)
 	current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	print(current_time, "01. VCF sorted successfully!")
 	print("    The ref sorted vcf is:", output_sorted_vcf_path)
@@ -271,7 +312,7 @@ def main(args=None):
 
 	output_filtered_vcf_path = get_output_file_path(output_dir_path, "ref_sorted_format_filtered_sv.vcf")
 	output_close_vcf_path = get_output_file_path(output_dir_path, "ref_sorted_format_close_sv.vcf")
-	filter_variants(output_format_vcf_path, output_filtered_vcf_path, output_close_vcf_path, slop=75)
+	filter_variants(output_format_vcf_path, output_filtered_vcf_path, output_close_vcf_path, slop)
 	current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	print(current_time, "03. VCF SVs filtered successfully!")
 	print(f"    Filtered variants are written to {output_filtered_vcf_path}")
