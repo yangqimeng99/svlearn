@@ -26,12 +26,12 @@ The following mapping software may need to be installed separately:
 
 ### Python environment
 ```
-conda create -n svlearn python=3.9 pysam=0.22.0 polars=0.20.15 pandas=2.2.1 scikit-learn=1.3.0 pyfaidx pyarrow bioconda::pybedtools conda-forge::intervaltree
+conda create -n svlearn python=3.9 bioconda::pysam=0.22.0 polars=0.20.15 pandas=2.2.1 scikit-learn=1.3.0 bioconda::pyfaidx pyarrow bioconda::pybedtools conda-forge::intervaltree
 conda activate svlearn
 ```
 or:
 ```
-mamba create -n svlearn python=3.9 pysam=0.22.0 polars=0.20.15 pandas=2.2.1 scikit-learn=1.3.0 pyfaidx pyarrow bioconda::pybedtools conda-forge::intervaltree
+mamba create -n svlearn python=3.9 bioconda::pysam=0.22.0 polars=0.20.15 pandas=2.2.1 scikit-learn=1.3.0 bioconda::pyfaidx pyarrow bioconda::pybedtools conda-forge::intervaltree
 mamba activate svlearn
 ```
 
@@ -134,7 +134,11 @@ In this step, the input VCF file will be formatted and used to generate an alter
 
 **Running:**
 ```
+Filter overlapping SV:
 svlearn prepareAlt --ref_fasta ref.fasta --ref_sv_vcf sv.vcf --out 01.prepareAlt_output
+
+Retain overlapping SVs:
+svlearn prepareAlt --ref_fasta ref.fasta --ref_sv_vcf sv.vcf --out 01.prepareAlt_output --no-filter-overlaps
 ```
 
 **Output files:**
@@ -157,6 +161,10 @@ $tree 01.prepareAlt_output
  * `alt.fasta`: Alternative genome created based on `ref_sorted_format_filtered_sv.vcf` and `ref.fasta`
  * `alt_sorted_format_filtered_sv.vcf`: SV records based on the alt genome, changing DEL to INS, INS to DEL
  * `alt_sorted_format_filtered_sv.bed`: Positions of SV’s ALT sequences in the alt genome
+
+**Note:**
+With `--no-filter-overlaps`: Overlapping SVs are retained, and files with `*_filtered_sv*` are not generated. Instead, `ref_sorted_format.vcf` and `alt.bed` serve as the primary inputs for downstream analysis.
+
 
 ### 2. Extracting each SV feature
 In this step, four external software tools are employed separately to extract the features of each SV from both the `ref.fasta` and `alt.fasta`. Afterward, the svFeature module of svlearn is used to integrate these extracted features.
