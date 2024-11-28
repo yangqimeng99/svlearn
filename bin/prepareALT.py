@@ -1,8 +1,10 @@
 
 import os
+import re
 import sys
 import gzip
 import pysam
+import hashlib
 import platform
 import argparse
 import pandas as pd
@@ -13,21 +15,31 @@ def check_vcf(vcf, ref_genome, output_errors_vcf, output_filtered_vcf):
 	sv_ids = set()
 	errors = []  # Store tuples of error SVs and records
 	filtered_records = []  # Store records without errors SVs
+	invalid_base_pattern = re.compile('[^AGCT]')
 
 	for rec in vcf:
 		error_messages = []
 		svtype = rec.info.get('SVTYPE')
 		if isinstance(svtype, tuple):
 			svtype = svtype[0]
-
+		# Check if SVTYPE is valid
 		if svtype not in ['INS', 'DEL']:
-			error_messages.append(f"Invalid SVTYPE: {svtype} (Expected_'INS'_or_'DEL')")
+			error_messages.append(f"Invalid_SVTYPE-{svtype}")
 
+		# Check if REF sequence is consistent with the reference genome
 		ref_seq = ref_genome.fetch(rec.chrom, rec.pos - 1, rec.stop).upper()
 		if rec.ref.upper() != ref_seq:
 			error_messages.append("REF_sequence_inconsistent_with_genome_sequence")
-		elif rec.ref[0].upper() != rec.alts[0][0].upper():
+
+		# Check if REF and ALT sequences have different padding bases
+		if rec.ref[0].upper() != rec.alts[0][0].upper():
 			error_messages.append("Different_padding_base_for_REF_and_ALT_sequence")
+		
+		# Check if REF and ALT sequences contain invalid bases
+		sequences = {'REF': rec.ref.upper(), 'ALT': rec.alts[0].upper()}
+		for seq_name, seq in sequences.items():
+			if invalid_base_pattern.search(seq):
+				error_messages.append(f"Non-ACGT_base_in_{seq_name}_sequence")
 
 		sv_id = rec.id
 		if not sv_id or sv_id in sv_ids:
@@ -70,16 +82,16 @@ def check_vcf(vcf, ref_genome, output_errors_vcf, output_filtered_vcf):
 
 
 def sort_vcf(input_vcf, output_sorted_vcf):
-    """
-    Sort a VCF file using pysam.
-    """
-    with pysam.VariantFile(input_vcf) as vcf_in:
-        variants = [variant for variant in vcf_in]
-        variants.sort(key=lambda x: (x.chrom, x.pos))
+	"""
+	Sort a VCF file using pysam.
+	"""
+	with pysam.VariantFile(input_vcf) as vcf_in:
+		variants = [variant for variant in vcf_in]
+		variants.sort(key=lambda x: (x.chrom, x.pos))
 
-        with pysam.VariantFile(output_sorted_vcf, 'w', header=vcf_in.header) as vcf_out:
-            for variant in variants:
-                vcf_out.write(variant)
+		with pysam.VariantFile(output_sorted_vcf, 'w', header=vcf_in.header) as vcf_out:
+			for variant in variants:
+				vcf_out.write(variant)
 
 def process_vcf(input_vcf_path, output_vcf_path):
 	if input_vcf_path.endswith('.gz'):
@@ -97,6 +109,200 @@ def process_vcf(input_vcf_path, output_vcf_path):
 				continue
 
 			output_vcf.write('\t'.join(line.strip().split('\t', 8)[:8]) + '\n')
+
+
+def generate_contig_name(chr, sv_id):
+    # Replace any '-' with '_'
+    chr = chr.replace("-", "_")
+    sv_id = sv_id.replace("-", "_")
+    contig_name = f"{chr}_{sv_id}"
+    
+    # If contig_name length exceeds 50, shorten it
+    if len(contig_name) > 50:
+        chr_part = chr[:10]
+        sv_id_part = sv_id[:10]
+        # Generate a unique hash
+        hash_object = hashlib.md5(contig_name.encode())
+        short_hash = hash_object.hexdigest()[:8]  # Use first 8 characters of the hash
+        contig_name = f"{chr_part}_{sv_id_part}_{short_hash}"
+        # Ensure the contig_name is not longer than 50 characters
+        contig_name = contig_name[:50]
+    return contig_name
+
+
+
+def intervals_overlap(chrom1, start1, end1, chrom2, start2, end2):
+	"""Check if two intervals overlap."""
+	if chrom1 != chrom2:
+		return False
+	return start1 <= end2 and start2 <= end1
+
+def process_vcf_overlap(input_vcf):
+	"""Process a VCF file to detect overlapping intervals.
+
+	Args:
+		input_vcf (str): Path to the input VCF file.
+
+	Returns:
+		tuple: Two lists containing non-overlapping and overlapping intervals.
+	"""
+	# Open the VCF file
+	vcf_in = pysam.VariantFile(input_vcf, 'r')
+	
+	bed_intervals = []          # List to store non-overlapping intervals
+	overlapping_intervals = []  # List to store overlapping intervals
+	
+	for record in vcf_in:
+		chrom = record.chrom
+		start = record.start        # VCF positions are 1-based
+		end = record.stop         # For SVs, record.stop gives the end position
+	
+		current_interval = (chrom, start, end, record)
+	
+		if not bed_intervals:
+			# If bed_intervals is empty, add the current interval
+			bed_intervals.append(current_interval)
+		else:
+			# Get the last interval in bed_intervals
+			last_interval = bed_intervals[-1]
+			# Check for overlap with the last interval
+			if intervals_overlap(chrom, start, end, last_interval[0], last_interval[1], last_interval[2]):
+				# If overlapping, add to overlapping_intervals
+				overlapping_intervals.append(current_interval)
+			else:
+				# If not overlapping, add to bed_intervals
+				bed_intervals.append(current_interval)
+	
+	vcf_in.close()
+	return bed_intervals, overlapping_intervals
+
+def extract_alt_genome_from_all_SVs(input_fasta, output_alt_genome, output_alt_bed, bed_intervals, overlapping_intervals, read_length):
+	"""Generate an alternative genome by replacing SV regions with alternative sequences.
+
+	Args:
+		input_filtered_vcf (str): Path to the input filtered VCF file.
+		input_fasta (str): Path to the input reference genome FASTA file.
+		output_alt_genome (str): Path to the output alternative genome FASTA file.
+		output_alt_bed (str): Path to the output BED file recording SV positions.
+	"""
+	# Read the reference genome
+	ref = Fasta(input_fasta, rebuild=False)
+	ref_genome = pysam.FastaFile(input_fasta)
+	contigs_names_in_fasta = ref_genome.references
+	ref_genome.close()
+
+	# Get the list of contigs with SVs
+	contigs_with_sv = set()
+	for interval in bed_intervals + overlapping_intervals:
+		contigs_with_sv.add(interval[0])
+
+	# Get the list of contigs without SVs
+	no_sv_contigs = [seq for seq in contigs_names_in_fasta if seq not in contigs_with_sv]
+
+	out_fa_file = output_alt_genome
+	out_bed_file = output_alt_bed
+
+	with open(out_fa_file, "w") as out_fa, open(out_bed_file, "w") as out_bed:
+		# Process chromosomes without SVs
+		for seq in no_sv_contigs:
+			out_fa.write(f">{seq}\n")
+			out_fa.write(str(ref[seq]))
+			out_fa.write("\n")
+
+		# Process chromosomes with SVs
+		for chrom in contigs_names_in_fasta:
+			if chrom not in contigs_with_sv:
+				continue  # Skip chromosomes without SVs
+
+			# Get non-overlapping SVs for this chromosome
+			chrom_bed_intervals = [i for i in bed_intervals if i[0] == chrom]
+			if not chrom_bed_intervals:
+				# No non-overlapping SVs in this chromosome, write the entire chromosome
+				out_fa.write(f">{chrom}\n")
+				out_fa.write(str(ref[chrom]))
+				out_fa.write("\n")
+				continue
+
+			# Sort the SVs by start position
+			chrom_bed_intervals.sort(key=lambda x: x[1])
+
+			# Initialize variables
+			current_chr = chrom
+			seq_len = 0
+			end = 0
+
+			# Write chromosome header
+			out_fa.write(f">{chrom}\n")
+
+			# Process non-overlapping SVs
+			for interval in chrom_bed_intervals:
+				chr, start, stop, record = interval
+				ref_seq = record.ref
+				alt_seq = record.alts[0]
+				sv_id = record.id
+				svtype = record.info['SVTYPE']
+
+				# Write the sequence before the SV
+				sv_left_seq = ref[chr][end:start].seq
+				out_fa.write(sv_left_seq)
+				seq_len += len(sv_left_seq)
+				pseudo_sta = seq_len
+
+				# Write the alternative sequence
+				out_fa.write(alt_seq)
+				seq_len += len(alt_seq)
+				pseudo_end = seq_len
+
+				# Write to alt_bed
+				out_bed.write(f"{chr}\t{pseudo_sta}\t{pseudo_end}\t{sv_id}\t{svtype}\n")
+
+				# Update 'end'
+				end = start + len(ref_seq)
+
+			# Write the remaining sequence after the last SV
+			out_fa.write(ref[chr][end:].seq)
+			out_fa.write("\n")
+
+		# Process overlapping SVs
+		for interval in overlapping_intervals:
+			chr, start, stop, record = interval
+			ref_seq = record.ref
+			alt_seq = record.alts[0]
+			sv_id = record.id
+			svtype = record.info['SVTYPE']
+
+			# Extract one read leangth (150 bp) before and after the SV site
+			left_pos = max(0, start - read_length)
+			right_pos = min(stop + read_length, len(ref[chr]))  # 'stop' is 1-based
+			sv_left_seq = ref[chr][left_pos:start].seq
+			sv_right_seq = ref[chr][stop:right_pos].seq
+
+			# Create a new contig
+			contig_name = generate_contig_name(chr, sv_id)
+			out_fa.write(f">{contig_name}\n")
+
+			# Initialize seq_len for this contig
+			seq_len = 0
+
+			# Write the left sequence
+			out_fa.write(sv_left_seq)
+			seq_len += len(sv_left_seq)
+			pseudo_sta = seq_len
+
+			# Write the alternative sequence
+			out_fa.write(alt_seq)
+			seq_len += len(alt_seq)
+			pseudo_end = seq_len
+
+			# Write the right sequence
+			out_fa.write(sv_right_seq)
+			seq_len += len(sv_right_seq)
+			out_fa.write("\n")
+
+			# Write to alt_bed
+			out_bed.write(f"{contig_name}\t{pseudo_sta}\t{pseudo_end}\t{sv_id}\t{svtype}\n")
+
+	ref.close()
 
 def filter_variants(input_vcf, out_clean_vcf, out_close_vcf, slop):
 	vcf = pysam.VariantFile(input_vcf)
@@ -208,7 +414,7 @@ def create_fasta_index(fasta_file):
 		print(f"Failed to create index for {fasta_file}: {e}")
 		sys.exit(1)
 
-def prepare_vcf_header(output_vcf, fasta_file, ref_vcf):
+def prepare_vcf_header(output_vcf, fasta_file, ref_vcf, all_sv=False):
 	"""Prepare the header of the output VCF file based on the given FASTA and reference VCF."""
 	with open(output_vcf, 'w') as vcf_out:
 		current_time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
@@ -223,10 +429,13 @@ def prepare_vcf_header(output_vcf, fasta_file, ref_vcf):
 			for line in ref_vcf_in:
 				if line.startswith("##ALT=") or line.startswith("##FILTER=") or line.startswith("##INFO="):
 					vcf_out.write(line)
+		
+		if all_sv:
+			vcf_out.write("##INFO=<ID=OVERLAP,Number=1,Type=String,Description='Indicates whether this SV overlaps with other SVs (YES/NO)'>\n")
 
 		vcf_out.write(f"#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
 
-def create_alt_vcf(in_ref_vcf, alt_sv_bed, alt_fasta, output_vcf):
+def create_alt_vcf(in_ref_vcf, alt_sv_bed, alt_fasta, output_vcf, bed_intervals=None, overlapping_intervals=None):
 	vcf_in = pysam.VariantFile(in_ref_vcf, "r")
 	
 	fasta = pysam.FastaFile(alt_fasta)
@@ -239,6 +448,9 @@ def create_alt_vcf(in_ref_vcf, alt_sv_bed, alt_fasta, output_vcf):
 			bed_dict[sv_id] = [chrom, start, end, svtype]
 
 	svtype_mapping = {"INS": "DEL", "DEL": "INS"}
+
+	if overlapping_intervals is not None:
+		overlapping_records_set = {item[3].id for item in overlapping_intervals if item[3].id}
 
 	with open(output_vcf, 'a') as vcf_out:
 		for record in vcf_in:
@@ -256,8 +468,13 @@ def create_alt_vcf(in_ref_vcf, alt_sv_bed, alt_fasta, output_vcf):
 			svtype = svtype_mapping[svtype]
 
 			svlen = len(alt_alt_seq) if svtype == "INS" else len(alt_ref_seq)
+
+			if overlapping_intervals is not None:
+				overlap = "YES" if record.id in overlapping_records_set else "NO"
+				vcf_row = f"{chrom}\t{pos}\t{sv_id}\t{alt_ref_seq}\t{alt_alt_seq}\t{sv_quality}\tPASS\tSVTYPE={svtype};SVLEN={svlen};END={end};OVERLAP={overlap}\n"
+			else:
+				vcf_row = f"{chrom}\t{pos}\t{sv_id}\t{alt_ref_seq}\t{alt_alt_seq}\t{sv_quality}\tPASS\tSVTYPE={svtype};SVLEN={svlen};END={end}\n"
 			
-			vcf_row = f"{chrom}\t{pos}\t{sv_id}\t{alt_ref_seq}\t{alt_alt_seq}\t{sv_quality}\tPASS\tSVTYPE={svtype};SVLEN={svlen};END={end}\n"
 			vcf_out.write(vcf_row)
 
 
@@ -269,8 +486,11 @@ def main(args=None):
 
 	parser.add_argument("--ref_fasta", type=str, required=True, help="The Fasta file of ref genome", metavar="file")
 	parser.add_argument("--ref_sv_vcf", type=str, required=True, help="The SV VCF file based ref genome", metavar="file")
+	parser.add_argument('--no-filter-overlaps', action='store_true', help='If specified, use all SVs to construct the ALT genome; otherwise, filter out overlapping SVs to improve genotyping performance.')
 	parser.add_argument("--min_distance", type=str, default="150", help="Filter out pairs of SVs that are less than this distance apart, default: 150", metavar="int")
+	parser.add_argument("--read_length", type=str, default="150", help="Short reads leagth, default: 150", metavar="int")
 	parser.add_argument("-o", "--out", type=str, default="prepareAlt_output", help="The output dir name of prepareAlt", metavar="dir")
+
 	
 	# Debugging
 	# print("sys.argv:", sys.argv) 
@@ -278,10 +498,13 @@ def main(args=None):
 	input_fasta = parsed_args.ref_fasta
 	input_vcf = parsed_args.ref_sv_vcf
 	output_dir = parsed_args.out
+	# filter_overlaps = not parsed_args.no_filter_overlaps
 	slop = max(int(parsed_args.min_distance), 0)
+	read_length = int(parsed_args.read_length)
 
 	current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	print(current_time, "python version:", platform.python_version())
+	print(current_time, "short reads length:", read_length)
 
 	output_dir_path = os.path.abspath(output_dir)
 	os.makedirs(output_dir_path, exist_ok=True)
@@ -310,26 +533,48 @@ def main(args=None):
 	print(current_time, "02. VCF formatted successfully!")
 	print("    The ref sorted format vcf is:", output_format_vcf_path)
 
-	output_filtered_vcf_path = get_output_file_path(output_dir_path, "ref_sorted_format_filtered_sv.vcf")
-	output_close_vcf_path = get_output_file_path(output_dir_path, "ref_sorted_format_close_sv.vcf")
-	filter_variants(output_format_vcf_path, output_filtered_vcf_path, output_close_vcf_path, slop)
-	current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	print(current_time, "03. VCF SVs filtered successfully!")
-	print(f"    Filtered variants are written to {output_filtered_vcf_path}")
-	print(f"    Close variants are written to {output_close_vcf_path}")
+	if parsed_args.no_filter_overlaps:
+		current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+		print(current_time, "03. use all SVs to construct the ALT genome")
+		output_filtered_vcf_path = output_format_vcf_path
+		output_alt_genome_path = get_output_file_path(output_dir_path, "alt.fasta")   # Output path for the alternative genome FASTA file
+		output_alt_bed_path = get_output_file_path(output_dir_path, "alt.bed")     # Output path for the BED file
+		
+		# Process the VCF file to get non-overlapping and overlapping intervals
+		bed_intervals, overlapping_intervals = process_vcf_overlap(output_format_vcf_path)
+		extract_alt_genome_from_all_SVs(input_fasta, output_alt_genome_path, output_alt_bed_path, bed_intervals, overlapping_intervals, read_length)
+		current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+		print(current_time, "04. ALT genome created successfully!")
+		print("    The ALT genome Fasta is:", output_alt_genome_path)
+		print("    The ALT genome SVs BED is:", output_alt_bed_path)
 
-	output_alt_genome_path = get_output_file_path(output_dir_path, "alt.fasta")
-	output_alt_bed_path = get_output_file_path(output_dir_path, "alt_sorted_format_filtered_sv.bed")
-	extract_alt_genome(output_filtered_vcf_path, input_fasta, output_alt_genome_path, output_alt_bed_path)
-	current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	print(current_time, "04. ALT genome created successfully!")
-	print("    The ALT genome Fasta is:", output_alt_genome_path)
-	print("    The ALT genome SVs BED is:", output_alt_bed_path)
+		out_alt_vcf_file_path = get_output_file_path(output_dir_path, "alt_sorted_format.vcf")
+		create_fasta_index(output_alt_genome_path)
+		prepare_vcf_header(out_alt_vcf_file_path, output_alt_genome_path, output_filtered_vcf_path, all_sv=True)
+		create_alt_vcf(output_filtered_vcf_path, output_alt_bed_path, output_alt_genome_path, out_alt_vcf_file_path, bed_intervals, overlapping_intervals)
 
-	out_alt_vcf_file_path = get_output_file_path(output_dir_path, "alt_sorted_format_filtered_sv.vcf")
-	create_fasta_index(output_alt_genome_path)
-	prepare_vcf_header(out_alt_vcf_file_path, output_alt_genome_path, output_filtered_vcf_path)
-	create_alt_vcf(output_filtered_vcf_path, output_alt_bed_path, output_alt_genome_path, out_alt_vcf_file_path)
+	else:
+		output_filtered_vcf_path = get_output_file_path(output_dir_path, "ref_sorted_format_filtered_sv.vcf")
+		output_close_vcf_path = get_output_file_path(output_dir_path, "ref_sorted_format_close_sv.vcf")
+		filter_variants(output_format_vcf_path, output_filtered_vcf_path, output_close_vcf_path, slop)
+		current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+		print(current_time, "03. VCF SVs filtered successfully!")
+		print(f"    Filtered variants are written to {output_filtered_vcf_path}")
+		print(f"    Close variants are written to {output_close_vcf_path}")
+
+		output_alt_genome_path = get_output_file_path(output_dir_path, "alt.fasta")
+		output_alt_bed_path = get_output_file_path(output_dir_path, "alt_sorted_format_filtered_sv.bed")
+		extract_alt_genome(output_filtered_vcf_path, input_fasta, output_alt_genome_path, output_alt_bed_path)
+		current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+		print(current_time, "04. ALT genome created successfully!")
+		print("    The ALT genome Fasta is:", output_alt_genome_path)
+		print("    The ALT genome SVs BED is:", output_alt_bed_path)
+
+		out_alt_vcf_file_path = get_output_file_path(output_dir_path, "alt_sorted_format_filtered_sv.vcf")
+		create_fasta_index(output_alt_genome_path)
+		prepare_vcf_header(out_alt_vcf_file_path, output_alt_genome_path, output_filtered_vcf_path)
+		create_alt_vcf(output_filtered_vcf_path, output_alt_bed_path, output_alt_genome_path, out_alt_vcf_file_path)
+
 	current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	print(current_time, "05. ALT VCF created successfully!")
 	print("    The ALT genome SVs VCF is:", out_alt_vcf_file_path)
