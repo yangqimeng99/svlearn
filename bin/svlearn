@@ -41,9 +41,12 @@ def parse_args(version):
     parser.add_argument('-v', '--version', action='version', version=version)
 
     # prepareAlt
-    parser_prepareALT = subparsers.add_parser('prepareAlt', help='From ref genome and vcf create alt genome and vcf.')
+    parser_prepareALT = subparsers.add_parser('prepareAlt', help='From ref genome and vcf create alt genome and vcf')
     parser_prepareALT.add_argument('--ref_fasta', type=str, required=True, help='The Fasta file of ref genome', metavar='file')
     parser_prepareALT.add_argument('--ref_sv_vcf', type=str, required=True, help='The SV VCF file based ref genome', metavar='file')
+    parser_prepareALT.add_argument("--min_distance", type=str, default="150", help="Filter out pairs of SVs that are less than this distance apart, default: 150", metavar="int")
+    parser_prepareALT.add_argument('--no-filter-overlaps', action='store_true', help='If specified, use all SVs to construct the ALT genome; otherwise, filter out overlapping SVs to improve genotyping performance')
+    parser_prepareALT.add_argument("--read_length", type=str, default="150", help="Short reads leagth, default: 150", metavar="int")
     parser_prepareALT.add_argument("-o", "--out", type=str, default="prepareAlt_output", help="The output dir name of prepareAlt, Default: prepareAlt_output", metavar="dir")
 
     # SVfeature
@@ -114,12 +117,21 @@ def parse_args(version):
     return parser.parse_args()
 
 def main():
-    args = parse_args(version='%(prog)s version 0.0.1')
+    args = parse_args(version='%(prog)s version 0.0.4-dev')
     
     if args.command == 'prepareAlt':
-        create_alt_main(['--ref_fasta', args.ref_fasta,
-                         '--ref_sv_vcf', args.ref_sv_vcf,
-                         '-o', args.out])
+        args_list = [
+        '--ref_fasta', args.ref_fasta,
+        '--ref_sv_vcf', args.ref_sv_vcf,
+        '--min_distance', args.min_distance, 
+        '--read_length', args.read_length,
+        '-o', args.out
+        ]
+
+        if args.no_filter_overlaps:
+            args_list.append('--no-filter-overlaps')
+
+        create_alt_main(args_list)
     elif args.command == 'svFeature':
         sv_feature_ann_main(['--ref_sv_vcf', args.ref_sv_vcf,
                              '--alt_sv_bed', args.alt_sv_bed,

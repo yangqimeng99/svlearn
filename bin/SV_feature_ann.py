@@ -378,7 +378,8 @@ def main(args=None):
 									alt_ins_TR_class, on='sv_id', how='inner'),alt_ins_mappab, on='sv_id', how='inner')
 
 	sv_ann_df = pd.concat([ref_del_ann_df, alt_ins_ann_df], ignore_index=True).round(4)
-	sv_ann_df.to_csv(out_file, sep='\t', index=False)
+	sv_ann_df_unique = sv_ann_df.drop_duplicates(subset=['sv_id'], keep='first')
+	sv_ann_df_unique.to_csv(out_file, sep='\t', index=False)
 	os.remove('filtered_alt_bed_file.bed')
 
 	current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
