@@ -2,7 +2,7 @@
 A machine learning-based genotyping tool for structural variation of short reads
 
 ## Installation
-SVLearn version 0.0.1 has undergone stability testing on Linux, including Ubuntu 20.04.3 and Red Hat Enterprise Linux 8.3 (Ootpa).
+SVLearn version 0.0.4 has undergone stability testing on Linux, including Ubuntu 20.04.3 and Red Hat Enterprise Linux 8.3 (Ootpa).
 
 Installing SVLearn and the required Python environment using conda/mamba is convenient and efficient. Typically, the installation should not take more than half an hour.
 
