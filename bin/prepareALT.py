@@ -116,20 +116,16 @@ def generate_contig_name(chr, sv_id):
     chr = chr.replace("-", "_")
     sv_id = sv_id.replace("-", "_")
     contig_name = f"{chr}_{sv_id}"
-    
-    # If contig_name length exceeds 50, shorten it
-    if len(contig_name) > 50:
+
+    if len(contig_name) > 40:
         chr_part = chr[:10]
         sv_id_part = sv_id[:10]
-        # Generate a unique hash
         hash_object = hashlib.md5(contig_name.encode())
-        short_hash = hash_object.hexdigest()[:8]  # Use first 8 characters of the hash
+        short_hash = hash_object.hexdigest()[:8]
         contig_name = f"{chr_part}_{sv_id_part}_{short_hash}"
-        # Ensure the contig_name is not longer than 50 characters
-        contig_name = contig_name[:50]
+        # Ensure the contig_name is not longer than 40 characters
+        contig_name = contig_name[:40]
     return contig_name
-
-
 
 def intervals_overlap(chrom1, start1, end1, chrom2, start2, end2):
 	"""Check if two intervals overlap."""
@@ -154,20 +150,16 @@ def process_vcf_overlap(input_vcf):
 	
 	for record in vcf_in:
 		chrom = record.chrom
-		start = record.start        # VCF positions are 1-based
-		end = record.stop         # For SVs, record.stop gives the end position
+		start = record.start
+		end = record.stop
 	
 		current_interval = (chrom, start, end, record)
 	
 		if not bed_intervals:
-			# If bed_intervals is empty, add the current interval
 			bed_intervals.append(current_interval)
 		else:
-			# Get the last interval in bed_intervals
 			last_interval = bed_intervals[-1]
-			# Check for overlap with the last interval
 			if intervals_overlap(chrom, start, end, last_interval[0], last_interval[1], last_interval[2]):
-				# If overlapping, add to overlapping_intervals
 				overlapping_intervals.append(current_interval)
 			else:
 				# If not overlapping, add to bed_intervals
@@ -281,25 +273,20 @@ def extract_alt_genome_from_all_SVs(input_fasta, output_alt_genome, output_alt_b
 			contig_name = generate_contig_name(chr, sv_id)
 			out_fa.write(f">{contig_name}\n")
 
-			# Initialize seq_len for this contig
 			seq_len = 0
 
-			# Write the left sequence
 			out_fa.write(sv_left_seq)
 			seq_len += len(sv_left_seq)
 			pseudo_sta = seq_len
 
-			# Write the alternative sequence
 			out_fa.write(alt_seq)
 			seq_len += len(alt_seq)
 			pseudo_end = seq_len
 
-			# Write the right sequence
 			out_fa.write(sv_right_seq)
 			seq_len += len(sv_right_seq)
 			out_fa.write("\n")
 
-			# Write to alt_bed
 			out_bed.write(f"{contig_name}\t{pseudo_sta}\t{pseudo_end}\t{sv_id}\t{svtype}\n")
 
 	ref.close()
@@ -409,9 +396,9 @@ def create_fasta_index(fasta_file):
 	fai_file = fasta_file + ".fai"
 	try:
 		Fasta(fasta_file)
-		print(f"05. Index file {fai_file} exists or was created successfully.")
+		print(f"    Index file {fai_file} exists or was created successfully.")
 	except Exception as e:
-		print(f"Failed to create index for {fasta_file}: {e}")
+		print(f"    Failed to create index for {fasta_file}: {e}")
 		sys.exit(1)
 
 def prepare_vcf_header(output_vcf, fasta_file, ref_vcf, all_sv=False):
@@ -491,14 +478,11 @@ def main(args=None):
 	parser.add_argument("--read_length", type=str, default="150", help="Short reads leagth, default: 150", metavar="int")
 	parser.add_argument("-o", "--out", type=str, default="prepareAlt_output", help="The output dir name of prepareAlt", metavar="dir")
 
-	
-	# Debugging
-	# print("sys.argv:", sys.argv) 
+
 	parsed_args = parser.parse_args(args=args)
 	input_fasta = parsed_args.ref_fasta
 	input_vcf = parsed_args.ref_sv_vcf
 	output_dir = parsed_args.out
-	# filter_overlaps = not parsed_args.no_filter_overlaps
 	slop = max(int(parsed_args.min_distance), 0)
 	read_length = int(parsed_args.read_length)
 

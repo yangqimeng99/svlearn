@@ -1,4 +1,3 @@
-# %%
 import os
 import sys
 import gzip
@@ -20,14 +19,14 @@ def pre_data(pl_df, change_dtype_dict, check_null, check_nan):
         .otherwise(pl.lit(np.nan)).alias("sv_type")
         )
     
-    condition1 = reduce(lambda a, b: a | b, [pl_df[col] == "-" for col in check_null])
+    # condition1 = reduce(lambda a, b: a | b, [pl_df[col] == "-" for col in check_null])
+    condition1 = reduce(lambda a, b: a | b, [pl_df[col].is_null() for col in check_null])
     pl_df_filted = pl_df.filter(~condition1)
 
     condition2 = reduce(lambda a, b: a | b, [pl_df_filted[col].is_nan() for col in check_nan])
     pl_df_filted = pl_df_filted.filter(~condition2).cast(change_dtype_dict)
 
     return pl_df_filted, len(pl_df), len(pl_df_filted)
-
 
 def auto_open(filename, mode='rt'):
     if filename.endswith('.vcf'):
@@ -60,7 +59,7 @@ def main(args=None):
     out_file = parsed_args.out
 
     sv_feature = pl.read_csv(sv_feature_file, separator='\t')
-    align_feature = pl.read_csv(align_feature_file, separator='\t')
+    align_feature = pl.read_csv(align_feature_file, separator='\t', null_values=["-"])
     paragraph_feature_file = None if paragraph_feature_file == "None" else paragraph_feature_file
     if paragraph_feature_file is not None:
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

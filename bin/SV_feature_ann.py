@@ -1,4 +1,3 @@
-# %%
 import os
 import pysam
 import argparse
@@ -60,8 +59,7 @@ def process_repeat_masker(data, repeat_type):
 
 	return bed_merged
 	
-
-# %%
+	
 def process_biser_out(biser_file, Satellite_bed):
 	dtype_spec = {
 	0: str, 1: int, 2: int, 3: str, 4: int, 5: int, 

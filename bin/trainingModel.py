@@ -1,4 +1,3 @@
-# %%
 import os
 import sys
 import argparse
@@ -40,7 +39,8 @@ def pre_data(pl_df, change_dtype_dict, check_null, check_nan):
 		.otherwise(pl.lit(np.nan)).alias("sv_type")
 		)
 
-	condition1 = reduce(lambda a, b: a | b, [pl_df[col] == "-" for col in check_null])
+	# condition1 = reduce(lambda a, b: a | b, [pl_df[col] == "-" for col in check_null])
+	condition1 = reduce(lambda a, b: a | b, [pl_df[col].is_null() for col in check_null])
 	pl_df_filted = pl_df.filter(~condition1)
 
 	condition2 = reduce(lambda a, b: a | b, [pl_df_filted[col].is_nan() for col in check_nan])
@@ -120,7 +120,6 @@ def get_benchmark_info(genotype_df, benchmark_out_file):
 			file.write(f"{key}  {value}\n")
 
 
-# %%
 def main(args=None):
 	parser = argparse.ArgumentParser(description="Run paragraph in ref and alt bam.")
 	parser.add_argument("--train_set", type=str, required=True, help="Training data set", metavar="file")
@@ -152,7 +151,7 @@ def main(args=None):
 	output_dir_path = os.path.abspath(output_dir)
 	os.makedirs(output_dir_path, exist_ok=True)
 
-	train_set_df = pl.read_csv(train_set, separator='\t', has_header=True)
+	train_set_df = pl.read_csv(train_set, separator='\t', has_header=True, null_values=["-"])
 
 	if other_feature == "paragraph":
 		current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -201,7 +200,7 @@ def main(args=None):
 		print("Other features are not currently supported")
 		exit(1)
 
-	train_set_filted_df, input_train_num, filtered_train_num, = pre_data(train_set_df, feature_dtype_change_dict, check_null, check_nan)
+	train_set_filted_df, input_train_num, filtered_train_num = pre_data(train_set_df, feature_dtype_change_dict, check_null, check_nan)
 	train_set_filted_df = train_set_filted_df.drop("sv_id")
 	train_set_filted_df = utils.shuffle(train_set_filted_df)
 
@@ -260,7 +259,7 @@ def main(args=None):
 		print(current_time, "ALL DONE!")
 		sys.exit(0)
 	else:
-		val_set_df = pl.read_csv(val_set, separator='\t', has_header=True)
+		val_set_df = pl.read_csv(val_set, separator='\t', has_header=True, null_values=["-"])
 		val_set_filted_id_df, input_val_num, filtered_val_num, = pre_data(val_set_df, feature_dtype_change_dict, check_null, check_nan)
 		val_set_filted_df = val_set_filted_id_df.drop("sv_id")
 		current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
+
 import argparse
 import importlib
 import os
 import sys
 
 main_script_dir = os.path.dirname(os.path.realpath(__file__))
-
 if main_script_dir not in sys.path:
     sys.path.append(main_script_dir)
+
 
 class CustomHelpFormatter(argparse.HelpFormatter):
     def _format_action(self, action):
@@ -19,6 +20,7 @@ class CustomHelpFormatter(argparse.HelpFormatter):
         usage = super()._format_usage(usage, actions, groups, prefix)
         return usage + '\n'
 
+
 def dynamic_import_and_get_function(module_name, function_name):
     module = importlib.import_module(module_name)
     function = getattr(module, function_name, None)
@@ -26,31 +28,33 @@ def dynamic_import_and_get_function(module_name, function_name):
         raise ImportError(f"Cannot find function '{function_name}' in module '{module_name}'.")
     return function
 
-create_alt_main = dynamic_import_and_get_function('prepareALT', 'main')
-sv_feature_ann_main = dynamic_import_and_get_function('SV_feature_ann', 'main')
-BreakPoint_ReadDepth_2Bam_main = dynamic_import_and_get_function('BreakPoint_ReadDepth_2Bam', 'main')
-runParagraph_main = dynamic_import_and_get_function('runPragraph', 'main')
-trainingModel_main = dynamic_import_and_get_function('trainingModel', 'main')
-genotype_main = dynamic_import_and_get_function('genotype', 'main')
-benchmark_main = dynamic_import_and_get_function('benchmark', 'main')
 
 def parse_args(version):
-    parser = argparse.ArgumentParser(description="SVLearn: A structural variation genotyping tool based on two reference genomes and machine learning",
-                                     formatter_class=CustomHelpFormatter)
+
+    parser = argparse.ArgumentParser(
+        description="SVLearn: A structural variation genotyping tool based on two reference genomes and machine learning",
+        formatter_class=CustomHelpFormatter
+    )
     subparsers = parser.add_subparsers(dest="command", help="")
     parser.add_argument('-v', '--version', action='version', version=version)
 
     # prepareAlt
-    parser_prepareALT = subparsers.add_parser('prepareAlt', help='From ref genome and vcf create alt genome and vcf')
+    parser_prepareALT = subparsers.add_parser(
+        'prepareAlt',
+        help='From ref genome and vcf create alt genome and vcf'
+    )
     parser_prepareALT.add_argument('--ref_fasta', type=str, required=True, help='The Fasta file of ref genome', metavar='file')
     parser_prepareALT.add_argument('--ref_sv_vcf', type=str, required=True, help='The SV VCF file based ref genome', metavar='file')
-    parser_prepareALT.add_argument("--min_distance", type=str, default="150", help="Filter out pairs of SVs that are less than this distance apart, default: 150", metavar="int")
+    parser_prepareALT.add_argument("--min-distance", type=str, default="150", help="Filter out pairs of SVs that are less than this distance apart, default: 150", metavar="int")
     parser_prepareALT.add_argument('--no-filter-overlaps', action='store_true', help='If specified, use all SVs to construct the ALT genome; otherwise, filter out overlapping SVs to improve genotyping performance')
     parser_prepareALT.add_argument("--read_length", type=str, default="150", help="Short reads leagth, default: 150", metavar="int")
     parser_prepareALT.add_argument("-o", "--out", type=str, default="prepareAlt_output", help="The output dir name of prepareAlt, Default: prepareAlt_output", metavar="dir")
 
     # SVfeature
-    parser_SVfeature = subparsers.add_parser('svFeature', help='Extract SV features from different software outputs.')
+    parser_SVfeature = subparsers.add_parser(
+        'svFeature',
+        help='Extract SV features from different software outputs.'
+    )
     parser_SVfeature.add_argument("--ref_sv_vcf", type=str, required=True, help="The VCF file based ref genome", metavar='file')
     parser_SVfeature.add_argument("--alt_sv_bed", type=str, required=True, help="The BED file based alt genome", metavar='file')
     parser_SVfeature.add_argument("--ref_rm", type=str, required=True, help="The ref genome RepeatMasker .out file", metavar='file')
@@ -64,7 +68,10 @@ def parse_args(version):
     parser_SVfeature.add_argument("-o", "--out", type=str, default="sv_feature.tsv", help="The output file name, Default: sv_feature.tsv", metavar='file')
 
     # alignFeature
-    parser_alignFeature = subparsers.add_parser('alignFeature', help='Get BreakPoint and ReadDepth feature for SV sites from ref and alt bam.')
+    parser_alignFeature = subparsers.add_parser(
+        'alignFeature',
+        help='Get BreakPoint and ReadDepth feature for SV sites from ref and alt bam.'
+    )
     parser_alignFeature.add_argument("--ref_fasta", type=str, required=True, help="The ref genome Fasta file", metavar='file')
     parser_alignFeature.add_argument("--alt_fasta", type=str, required=True, help="The alt genome Fasta file", metavar='file')
     parser_alignFeature.add_argument("--ref_sv_vcf", type=str, required=True, help="The VCF file based ref genome", metavar='file')
@@ -75,9 +82,11 @@ def parse_args(version):
     parser_alignFeature.add_argument("-t", "--threads", type=str, default="1", help="threads. No more than 4", metavar='int')
     parser_alignFeature.add_argument("-o", "--out", type=str, default="BreakPoint_ReadDepth_feature_out", help="The output dir name. Default: BreakPoint_ReadDepth_feature_out", metavar="dir")
     
-
     # runParagraph
-    parser_runParagraph = subparsers.add_parser('runParagraph', help="Run paragraph in ref and alt bam.")
+    parser_runParagraph = subparsers.add_parser(
+        'runParagraph',
+        help="Run paragraph in ref and alt bam."
+    )
     parser_runParagraph.add_argument("--ref_fasta", type=str, required=True, help="The ref genome Fasta file", metavar='file')
     parser_runParagraph.add_argument("--alt_fasta", type=str, required=True, help="The alt genome Fasta file", metavar='file')
     parser_runParagraph.add_argument("--ref_sv_vcf", type=str, required=True, help="The VCF file based ref genome", metavar='file')
@@ -88,16 +97,22 @@ def parse_args(version):
     parser_runParagraph.add_argument("-o", "--out", type=str, default="Para_feature_out", help="The output dir name, Default: Para_feature_out", metavar='file')
 
     # trainingModel
-    parser_trainingModel = subparsers.add_parser('trainingModel', help="Training SV genotyping machine learning model from the feature.")
+    parser_trainingModel = subparsers.add_parser(
+        'trainingModel',
+        help="Training SV genotyping machine learning model from the feature."
+    )
     parser_trainingModel.add_argument("--train_set", type=str, required=True, help="Training data set", metavar="file")
     parser_trainingModel.add_argument("--val_set", type=str, default=None, help="Verification data set", metavar="file")
     parser_trainingModel.add_argument('--other_feature', type=str, default=None, help='optional: paragraph', metavar="str")
     parser_trainingModel.add_argument('--train_model', type=str, required=True, help='optional: RandomForest', metavar="str")
     parser_trainingModel.add_argument('-t', '--threads', type=str, default="1", help='The number of threads to use', metavar="int")
     parser_trainingModel.add_argument('-o', '--out', type=str, default="trainingModel_out", help="The output dir name, Default: trainingModel_out", metavar="dir")
-    
+
     # genotype
-    parser_genotype = subparsers.add_parser('genotype', help="SV genotyping was performed using a machine learning model.")
+    parser_genotype = subparsers.add_parser(
+        'genotype',
+        help="SV genotyping was performed using a machine learning model."
+    )
     parser_genotype.add_argument("-v", "--ref_sv_vcf", type=str, required=True, help="The VCF file based ref genome", metavar="file")
     parser_genotype.add_argument("-m", "--model", type=str, required=True, help="The machine learning model file", metavar="file")
     parser_genotype.add_argument("-s", "--sv_feature", type=str, required=True, help="SV feature from ref and alt genome, the output of SVfeature", metavar="file")
@@ -105,88 +120,120 @@ def parse_args(version):
     parser_genotype.add_argument("-p", "--paragraph_feature", type=str, default=None, help="Paragraph feature from 2bam, the output of runParagraph", metavar="file")
     parser_genotype.add_argument("-n", "--name", type=str, required=True, help="The sample name in out vcf file", metavar="str")
     parser_genotype.add_argument("-o", "--out", type=str, default="svlearn_genotype.vcf", help="The out vcf file, Default: svlearn_genotype.vcf", metavar="file")
-    
+
     # benchmark
-    parser_benchmark = subparsers.add_parser('benchmark', help="Benchmark the genotyped SV set based SV ID.")
+    parser_benchmark = subparsers.add_parser(
+        'benchmark',
+        help="Benchmark the genotyped SV set based SV ID."
+    )
     parser_benchmark.add_argument("-b", "--base_set", type=str, required=True, help="True sv vcf set", metavar="file")
     parser_benchmark.add_argument("-c", "--call_set", type=str, required=True, help="Predict sv vcf set", metavar="file")
     parser_benchmark.add_argument("-n1", "--base_sample_name", type=str, required=True, help="Sample name in true sv vcf set", metavar="str")
     parser_benchmark.add_argument("-n2", "--call_sample_name", type=str, required=True, help="Sample name in predict sv vcf set", metavar="str")
     parser_benchmark.add_argument("-o", "--out", type=str, default="benchmark.result.tsv", help="The out of bechmark result, Default: benchmark.result.tsv", metavar="file")
-    
+
     return parser.parse_args()
 
-def main():
-    args = parse_args(version='%(prog)s version 0.0.4-dev')
-    
-    if args.command == 'prepareAlt':
-        args_list = [
-        '--ref_fasta', args.ref_fasta,
-        '--ref_sv_vcf', args.ref_sv_vcf,
-        '--min_distance', args.min_distance, 
-        '--read_length', args.read_length,
-        '-o', args.out
-        ]
 
+def main():
+    args = parse_args(version='%(prog)s version 0.0.5')
+
+    if args.command == 'prepareAlt':
+        # 动态加载 prepareALT.main
+        create_alt_main = dynamic_import_and_get_function('prepareALT', 'main')
+        args_list = [
+            '--ref_fasta', args.ref_fasta,
+            '--ref_sv_vcf', args.ref_sv_vcf,
+            '--min_distance', args.min_distance,
+            '--read_length', args.read_length,
+            '-o', args.out
+        ]
         if args.no_filter_overlaps:
             args_list.append('--no-filter-overlaps')
 
         create_alt_main(args_list)
+
     elif args.command == 'svFeature':
-        sv_feature_ann_main(['--ref_sv_vcf', args.ref_sv_vcf,
-                             '--alt_sv_bed', args.alt_sv_bed,
-                             '--ref_genmap', args.ref_genmap,
-                             '--alt_genmap', args.alt_genmap,
-                             '--ref_rm', args.ref_rm,
-                             '--alt_rm', args.alt_rm,
-                             '--ref_biser', args.ref_biser,
-                             '--alt_biser', args.alt_biser,
-                             '--ref_trf', args.ref_trf,
-                             '--alt_trf', args.alt_trf,
-                             '-o', args.out])
+        sv_feature_ann_main = dynamic_import_and_get_function('SV_feature_ann', 'main')
+        sv_feature_ann_main([
+            '--ref_sv_vcf', args.ref_sv_vcf,
+            '--alt_sv_bed', args.alt_sv_bed,
+            '--ref_genmap', args.ref_genmap,
+            '--alt_genmap', args.alt_genmap,
+            '--ref_rm', args.ref_rm,
+            '--alt_rm', args.alt_rm,
+            '--ref_biser', args.ref_biser,
+            '--alt_biser', args.alt_biser,
+            '--ref_trf', args.ref_trf,
+            '--alt_trf', args.alt_trf,
+            '-o', args.out
+        ])
+
     elif args.command == 'alignFeature':
-        BreakPoint_ReadDepth_2Bam_main(['--ref_fasta', args.ref_fasta,
-                                        '--alt_fasta', args.alt_fasta,
-                                        '--ref_sv_vcf', args.ref_sv_vcf,
-                                        '--alt_sv_bed', args.alt_sv_bed,
-                                        '--ref_bam', args.ref_bam,
-                                        '--alt_bam', args.alt_bam,
-                                        '--read_leagth', args.read_leagth,
-                                        '--threads', args.threads,
-                                        '--out', args.out])
+        BreakPoint_ReadDepth_2Bam_main = dynamic_import_and_get_function('BreakPoint_ReadDepth_2Bam', 'main')
+        BreakPoint_ReadDepth_2Bam_main([
+            '--ref_fasta', args.ref_fasta,
+            '--alt_fasta', args.alt_fasta,
+            '--ref_sv_vcf', args.ref_sv_vcf,
+            '--alt_sv_bed', args.alt_sv_bed,
+            '--ref_bam', args.ref_bam,
+            '--alt_bam', args.alt_bam,
+            '--read_leagth', args.read_leagth,
+            '--threads', args.threads,
+            '--out', args.out
+        ])
+
     elif args.command == 'runParagraph':
-        runParagraph_main(['--ref_fasta', args.ref_fasta,
-                           '--alt_fasta', args.alt_fasta,
-                           '--ref_sv_vcf', args.ref_sv_vcf,
-                           '--alt_sv_vcf', args.alt_sv_vcf,
-                           '--ref_bam', args.ref_bam,
-                           '--alt_bam', args.alt_bam,
-                           '--threads', args.threads,
-                           '--out', args.out])
+        runParagraph_main = dynamic_import_and_get_function('runPragraph', 'main')
+        runParagraph_main([
+            '--ref_fasta', args.ref_fasta,
+            '--alt_fasta', args.alt_fasta,
+            '--ref_sv_vcf', args.ref_sv_vcf,
+            '--alt_sv_vcf', args.alt_sv_vcf,
+            '--ref_bam', args.ref_bam,
+            '--alt_bam', args.alt_bam,
+            '--threads', args.threads,
+            '--out', args.out
+        ])
+
     elif args.command == 'trainingModel':
-        trainingModel_main(['--train_set', args.train_set,
-                            '--val_set', args.val_set,
-                            '--other_feature', args.other_feature,
-                            '--train_model', args.train_model,
-                            '--threads', args.threads,
-                            '--out', args.out])
+        trainingModel_main = dynamic_import_and_get_function('trainingModel', 'main')
+        trainingModel_main([
+            '--train_set', args.train_set,
+            '--val_set', args.val_set,
+            '--other_feature', args.other_feature,
+            '--train_model', args.train_model,
+            '--threads', args.threads,
+            '--out', args.out
+        ])
+
     elif args.command == 'genotype':
-        genotype_main(['-v', args.ref_sv_vcf,
-                       '-m', args.model,
-                       '-s', args.sv_feature,
-                       '-a', args.align_feature,
-                       '-p', args.paragraph_feature,
-                       '-n', args.name,
-                       '-o', args.out])
+        genotype_main = dynamic_import_and_get_function('genotype', 'main')
+        genotype_main([
+            '-v', args.ref_sv_vcf,
+            '-m', args.model,
+            '-s', args.sv_feature,
+            '-a', args.align_feature,
+            '-p', args.paragraph_feature,
+            '-n', args.name,
+            '-o', args.out
+        ])
+
     elif args.command == 'benchmark':
-        benchmark_main(['-b', args.base_set,
-                        '-c', args.call_set,
-                        '-n1', args.base_sample_name,
-                        '-n2', args.call_sample_name,
-                        '-o', args.out])
+        benchmark_main = dynamic_import_and_get_function('benchmark', 'main')
+        benchmark_main([
+            '-b', args.base_set,
+            '-c', args.call_set,
+            '-n1', args.base_sample_name,
+            '-n2', args.call_sample_name,
+            '-o', args.out
+        ])
+
     else:
         print("Usage: svlearn <command> [options]")
         print("Please use: svlearn -h to get help information")
 
+
 if __name__ == "__main__":
     main()
+

@@ -38,16 +38,21 @@ mamba activate svlearn
 ### Build
 Download the [Release](https://github.com/yangqimeng99/svlearn/releases) 
 ```
-tar xvzf svlearn-0.0.1.tar.gz
-cd svlearn-0.0.1
+tar xvzf svlearn-0.0.5.tar.gz
+cd svlearn-0.0.5
+wget https://github.com/Illumina/paragraph/releases/download/v2.4a/paragraph-v2.4a-binary.zip
+unzip -q paragraph-v2.4a-binary.zip -d bin/paragraph-v2.4a
 bash install.sh
 ```
 or:
 ```
 git clone https://github.com/yangqimeng99/svlearn.git
 cd svlearn
+wget https://github.com/Illumina/paragraph/releases/download/v2.4a/paragraph-v2.4a-binary.zip
+unzip -q paragraph-v2.4a-binary.zip -d bin/paragraph-v2.4a
 bash install.sh
 ```
+
 
 ### Download the [trained model](https://doi.org/10.5281/zenodo.11144997)
 Please select the corresponding coverage genotyping model to achieve the best genotyping results.
@@ -100,10 +105,10 @@ sv_set_number                 38613
 genotyped_sv_number           37021
 genotype_rate                 0.9588
 accuracy_genotyped_sv_number  32956
-precison_GT                   0.8292
+precision_GT                  0.8292
 recall_GT                     0.7585
 f1_GT                         0.7922
-precison                      0.9209
+precision                     0.9209
 recall                        0.8424
 f1                            0.8799
 conc_00                       0.95
@@ -351,7 +356,7 @@ $tree 05.para_feature/sample1/
  * other files: Paragraph’s output
 
 **Note:**
-In the `svlearn runParagraph`, the [Paragraph](https://github.com/Illumina/paragraph) is called twice to extract six paragraph features. The SVLearn package includes a binary distribution of [Paragraph v2.4a](https://github.com/Illumina/paragraph/releases/tag/v2.4a), and we haven’t made any changes to its code.
+In the `svlearn runParagraph`, the [Paragraph](https://github.com/Illumina/paragraph) is called twice to extract six paragraph features.
 
 ### 6. Genotyping
 In this step, the feature matrixs obtained from previous steps is integrated, and the [trained model](https://doi.org/10.5281/zenodo.11144997) is called to obtain the SV genotypes.

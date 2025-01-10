@@ -24,22 +24,22 @@ def get_benchmark_info(genotype_df, benchmark_out_file):
     genotype_df_pred_01_11 = genotype_df.filter(pl.col('GT_pred')!='./.').filter(pl.col('GT_pred')!='0/0')
     genotype_df_pred_01_11_accuracy = genotype_df_pred_01_11.filter(pl.col('GT_true')==pl.col('GT_pred'))
 
-    precison_GT = len(genotype_df_pred_01_11_accuracy) / len(genotype_df_pred_01_11)
-    benchmark_result['precison_GT'] = round(precison_GT, 4)
+    precision_GT = len(genotype_df_pred_01_11_accuracy) / len(genotype_df_pred_01_11)
+    benchmark_result['precision_GT'] = round(precision_GT, 4)
 
     genotype_df_true_01_11 = genotype_df.filter(pl.col('GT_true')!='./.').filter(pl.col('GT_true')!='0/0')
     genotype_df_true_01_11_accuracy = genotype_df_true_01_11.filter(pl.col('GT_true')==pl.col('GT_pred'))
     recall_GT = len(genotype_df_true_01_11_accuracy) / len(genotype_df_true_01_11)
     benchmark_result['recall_GT'] = round(recall_GT, 4)
 
-    f1_GT = ( 2* precison_GT * recall_GT) / (precison_GT + recall_GT)
+    f1_GT = ( 2* precision_GT * recall_GT) / (precision_GT + recall_GT)
     benchmark_result['f1_GT'] = round(f1_GT, 4)
 
     genotype_df_pred_01_11_accuracy_2 = (genotype_df_pred_01_11
                                          .filter(pl.col('GT_true')!='0/0')
                                          .filter(pl.col('GT_true')!='./.'))
-    precison = len(genotype_df_pred_01_11_accuracy_2) / len(genotype_df_pred_01_11)
-    benchmark_result['precison'] = round(precison, 4)
+    precision = len(genotype_df_pred_01_11_accuracy_2) / len(genotype_df_pred_01_11)
+    benchmark_result['precision'] = round(precision, 4)
 
     genotype_df_true_01_11_accuracy_2 = (genotype_df_true_01_11
                                          .filter(pl.col('GT_pred')!='0/0')
@@ -47,7 +47,7 @@ def get_benchmark_info(genotype_df, benchmark_out_file):
     recall = len(genotype_df_true_01_11_accuracy_2) / len(genotype_df_true_01_11)
     benchmark_result['recall'] = round(recall, 4)
 
-    f1 = ( 2* precison * recall) / (precison + recall)
+    f1 = ( 2* precision * recall) / (precision + recall)
     benchmark_result['f1'] = round(f1, 4)
     
     genotype_df_00 = genotype_df.filter(pl.col('GT_true')=='0/0').filter(pl.col('GT_pred')!='./.')

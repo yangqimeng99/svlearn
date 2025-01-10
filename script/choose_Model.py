@@ -43,11 +43,10 @@ def pre_data(pl_df, change_dtype_dict, check_null, check_nan):
 		.otherwise(pl.lit(np.nan)).alias("sv_type")
 		)
 	
-	# 应用过滤条件去除包含 "-" 字符的行
-	condition1 = reduce(lambda a, b: a | b, [pl_df[col] == "-" for col in check_null])
+	# condition1 = reduce(lambda a, b: a | b, [pl_df[col] == "-" for col in check_null])
+	condition1 = reduce(lambda a, b: a | b, [pl_df[col].is_null() for col in check_null])
 	pl_df_filted = pl_df.filter(~condition1)
 
-	# 应用过滤条件去除包含 "NaN" 字符的行
 	condition2 = reduce(lambda a, b: a | b, [pl_df_filted[col].is_nan() for col in check_nan])
 	pl_df_filted = pl_df_filted.filter(~condition2).cast(change_dtype_dict)
 
@@ -80,7 +79,7 @@ def main(args=None):
 	output_dir_path = os.path.abspath(output_dir)
 	os.makedirs(output_dir_path, exist_ok=True)
 
-	train_set_df = pl.read_csv(train_set, separator='\t', has_header=True)
+	train_set_df = pl.read_csv(train_set, separator='\t', has_header=True, null_values=["-"])
 
 	if other_feature == "paragraph":
 		current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -149,7 +148,6 @@ def main(args=None):
 	}
 	transformers = [(feature, one_hot_encoders[feature], [feature]) for feature in categorical_features]
 	column_transformer = ColumnTransformer(transformers=transformers, remainder='passthrough')
-	# 应用独热编码转换
 	train_X_encoded = column_transformer.fit_transform(data_x)
 
 	skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
@@ -166,7 +164,7 @@ def main(args=None):
 	results_mean = {}
 	current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	print(current_time, "Start choose model...")
-	# 进行十折交叉验证并计算平均准确率
+	# Perform 10-fold cross-validation and calculate average accuracy
 	for name, model in models.items():
 		pipeline = make_pipeline(StandardScaler(), model)
 		cv_scores = cross_val_score(pipeline, train_X_encoded, data_y, cv=skf, scoring='accuracy')
@@ -175,7 +173,7 @@ def main(args=None):
 		current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 		print(current_time, f"{name}: Average 10-Fold Accuracy = {np.mean(cv_scores):.4f}")
 
-	# 选择准确率最高的模型
+	# Select the model with the highest accuracy
 	best_model = max(results_mean, key=results_mean.get)
 	current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	print(current_time, f"Best Model: {best_model}")

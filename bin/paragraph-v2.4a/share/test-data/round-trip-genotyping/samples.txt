@@ -1,3 +1,0 @@
-id	path	depth	read length
-sample1	sample1.bam	1	50
-sample2	sample2.bam	1	50
