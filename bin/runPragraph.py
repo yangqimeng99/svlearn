@@ -1,4 +1,3 @@
-# %%
 import re
 import os
 import sys
@@ -15,11 +14,9 @@ from pyfaidx import Fasta
 from functools import partial
 from datetime import datetime
 
-# %%
 def get_output_file_path(output_dir_path, file_name):
     return os.path.join(output_dir_path, file_name)
 
-# %%
 def main(args=None):
     parser = argparse.ArgumentParser(description="Run paragraph in ref and alt bam.")
     parser.add_argument("--ref_fasta", type=str, required=True, help="The ref genome Fasta file", metavar="file")
@@ -116,6 +113,12 @@ def main(args=None):
     alt_paragraph_out = get_output_file_path(output_dir_path, "alt_paragraph_out")
     ref_paragraph_out_tmp = get_output_file_path(ref_paragraph_out, "tmp")
     alt_paragraph_out_tmp = get_output_file_path(alt_paragraph_out, "tmp")
+    
+    os.makedirs(ref_paragraph_out_tmp, exist_ok=True)
+    env_ref = os.environ.copy()
+    env_ref['TMP'] = ref_paragraph_out_tmp
+    env_ref['TMPDIR'] = ref_paragraph_out_tmp
+    env_ref['TEMP'] = ref_paragraph_out_tmp
 
     ref_paragraph_command = [
         sys.executable, paragraph_path,
@@ -129,7 +132,7 @@ def main(args=None):
     ]
 
     try:
-        subprocess.run(ref_paragraph_command, check=True)
+        subprocess.run(ref_paragraph_command, check=True, env=env_ref)
     except subprocess.CalledProcessError as e:
         print(f"Error occurred while running paragraph in ref bam: {e}")
         sys.exit(1)
@@ -140,6 +143,11 @@ def main(args=None):
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(current_time, "03. Run paragraph in ref bam done.")
 
+    os.makedirs(alt_paragraph_out_tmp, exist_ok=True)
+    env_alt = os.environ.copy()
+    env_alt['TMP'] = alt_paragraph_out_tmp
+    env_alt['TMPDIR'] = alt_paragraph_out_tmp
+    env_alt['TEMP'] = alt_paragraph_out_tmp
 
     alt_paragraph_command = [
         sys.executable, paragraph_path,
@@ -153,7 +161,7 @@ def main(args=None):
     ]
 
     try:
-        subprocess.run(alt_paragraph_command, check=True)
+        subprocess.run(alt_paragraph_command, check=True, env=env_alt)
     except subprocess.CalledProcessError as e:
         print(f"Error occurred while running paragraph in alt bam: {e}")
         sys.exit(1)
@@ -260,8 +268,8 @@ def main(args=None):
     para_info_df = ref_info_df.join(alt_info_df, on="sv_id", how="left")
 
     para_info_df = (para_info_df
-				.with_columns((pl.col("ref_DP")-pl.col("alt_DP")).alias("DP"))
-				.with_columns((pl.col("ref_PL")-pl.col("alt_PL")).alias("PL")))
+                .with_columns((pl.col("ref_DP")-pl.col("alt_DP")).alias("DP"))
+                .with_columns((pl.col("ref_PL")-pl.col("alt_PL")).alias("PL")))
 
     para_info_out = get_output_file_path(output_dir_path, "para_feature.tsv")
     para_info_df.select(['sv_id', 'ref_GT', 'alt_GT', 'ref_FT', 'alt_FT', 'DP', 'PL']).write_csv(para_info_out, separator="\t")

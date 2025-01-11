@@ -1,9 +1,0 @@
-##fileformat=VCFv4.2
-##reference=GRCh38-with-decoy
-##fileDate=20180308
-##FILTER=<ID=PASS,Description="All filters passed">
-##INFO=<ID=SVTYPE,Number=1,Type=String,Description="SV type">
-##INFO=<ID=TANDEM,Number=0,Type=Flag,Description="Overlap with TRF track">
-##contig=<ID=chr20,length=64444167>
-#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT
-chr20	149013	HG002_pbsv.INS.49079	A	ACCATATTTGGGAGGCAATTTTACCTGTTCTCAAGGCCGCATCTCTACCCCATCTCATGCGAATCCTGAC	.	PASS	SVTYPE=INS;TANDEM

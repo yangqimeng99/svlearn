@@ -2,7 +2,7 @@
 A machine learning-based genotyping tool for structural variation of short reads
 
 ## Installation
-SVLearn version 0.0.4 has undergone stability testing on Linux, including Ubuntu 20.04.3 and Red Hat Enterprise Linux 8.3 (Ootpa).
+SVLearn version 0.0.5 has undergone stability testing on Linux, including Ubuntu 20.04.3 and Red Hat Enterprise Linux 8.3 (Ootpa).
 
 Installing SVLearn and the required Python environment using conda/mamba is convenient and efficient. Typically, the installation should not take more than half an hour.
 
@@ -36,16 +36,22 @@ mamba activate svlearn
 ```
 
 ### Build
-Download the [Release](https://github.com/yangqimeng99/svlearn/releases) 
+Download the [Release](https://github.com/yangqimeng99/svlearn/releases) .
+
+Ensure that `install.sh` is run within an activated conda environment.
 ```
-tar xvzf svlearn-0.0.1.tar.gz
-cd svlearn-0.0.1
-bash install.sh
+tar xvzf svlearn-0.0.5.tar.gz
+cd svlearn-0.0.5
+wget https://github.com/Illumina/paragraph/releases/download/v2.4a/paragraph-v2.4a-binary.zip
+unzip -q paragraph-v2.4a-binary.zip -d bin/paragraph-v2.4a
+bash install.sh 
 ```
 or:
 ```
 git clone https://github.com/yangqimeng99/svlearn.git
 cd svlearn
+wget https://github.com/Illumina/paragraph/releases/download/v2.4a/paragraph-v2.4a-binary.zip
+unzip -q paragraph-v2.4a-binary.zip -d bin/paragraph-v2.4a
 bash install.sh
 ```
 
@@ -71,39 +77,43 @@ bash test.sh
 ```
 
 ## Demo
-We provide one sample dataset for each of the three species: human, cattle, and sheep, which can be used for demonstration and validation. You can download them from [here](https://doi.org/10.5281/zenodo.13309024).
+We provide one sample dataset for each of the three species: human, cattle, and sheep, which can be used for demonstration and validation. You can download them from [here](https://doi.org/10.5281/zenodo.13309024). Before testing the demo, the [trained model](https://doi.org/10.5281/zenodo.11144997) should also be downloaded to the working directory.
 
-Here is an example demonstration using the human 24 feature dataset. The demonstration is expected to complete in approximately 3 minutes using a single CPU core and 16GB of memory.
 
+Here is a demonstration using one example from each of the three species. Each demonstration is expected to complete in approximately 5 minutes using a single CPU core and 16GB of memory.
+
+#### Demo 1: Human 24 feature
 ```
+## 24 feature
 svlearn genotype \
       -v 02.SV-set_Genomes/human_ref_sorted_format_filtered_sv.vcf \
       -m Human_30x_24feature_RandomForest_model.joblib \
       -s 04.validation-dataset/human/Human_SV_Set-sv_feature.tsv \
       -a 04.validation-dataset/human/HG002_30x/BreakPoint_ReadDepth_2Bam_feature.tsv \
       -p 04.validation-dataset/human/HG002_30x/para_feature.tsv \
-      -n test
+      -o HG002_30_svlearn_genotype.vcf \
+      -n HG002_30
 
 svlearn benchmark \
       -b 04.validation-dataset/human/Human_SV_Set-HG002_True_GT.vcf \
-      -c svlearn_genotype.vcf \
-      -n1 HG002 -n2 test
+      -c HG002_30_svlearn_genotype.vcf \
+      -o HG002_30_svlearn.bench.tsv \
+      -n1 HG002 -n2 HG002_30
 ```
-
 The above demonstration will generate two files:
 
-`svlearn_genotype.vcf`: The SV genotyping file output by SVLearn.
+`HG002_30_svlearn_genotype.vcf`: The SV genotyping file output by SVLearn.
 
-`benchmark.result.tsv`: The genotyping performance of `svlearn_genotype.vcf` compared with the truth set, with the specific results as follows:
+`HG002_30_svlearn.bench.tsv`: The genotyping performance of `HG002_30_svlearn_genotype.vcf` compared with the truth set, with the specific results as follows:
 ```
 sv_set_number                 38613
 genotyped_sv_number           37021
 genotype_rate                 0.9588
 accuracy_genotyped_sv_number  32956
-precison_GT                   0.8292
+precision_GT                  0.8292
 recall_GT                     0.7585
 f1_GT                         0.7922
-precison                      0.9209
+precision                     0.9209
 recall                        0.8424
 f1                            0.8799
 conc_00                       0.95
@@ -115,6 +125,75 @@ wgc                           0.8537
 The `precision_GT`, `recall_GT`, and `f1_GT` metrics emphasize the genotyping performance when distinguishing between heterozygous and homozygous genotypes. 
 The `precision`, `recall`, and `f1` metrics focus on the presence or absence of variants in the genotyping results, without distinguishing between heterozygous and homozygous variants.
 
+#### Demo 2: Cattle 18 feature
+```
+## 18 feature
+svlearn genotype \
+      -v 02.SV-set_Genomes/cattle_ref_sorted_format_filtered_sv.vcf \
+      -m Cattle_18feature_RandomForest_model.joblib \
+      -s 04.validation-dataset/cattle/Cattle_SV_Set-sv_feature.tsv \
+      -a 04.validation-dataset/cattle/Charolais_30x/BreakPoint_ReadDepth_2Bam_feature.tsv \
+      -o Charolais_30_svlearn_genotype.vcf \
+      -n Charolais_30
+
+svlearn benchmark \
+      -b 04.validation-dataset/cattle/Cattle_SV_Set-Charolais_True_GT.vcf \
+      -c Charolais_30_svlearn_genotype.vcf \
+      -o Charolais_30_svlearn.bench.tsv \
+      -n1 Charolais -n2 Charolais_30
+```
+`Charolais_30_svlearn.bench.tsv`: The genotyping performance of `Charolais_30_svlearn_genotype.vcf` compared with the truth set, with the specific results as follows:
+```
+sv_set_number                 121435
+genotyped_sv_number           120151
+genotype_rate                 0.9894
+accuracy_genotyped_sv_number  115362
+precision_GT                  0.8619
+recall_GT                     0.7924
+f1_GT                         0.8257
+precision                     0.9104
+recall                        0.837
+f1                            0.8721
+conc_00                       0.9854
+conc_01                       0.7866
+conc_11                       0.8621
+wgc                           0.878
+```
+
+#### Demo 3: Sheep 18 feature
+```
+## 18 feature
+svlearn genotype \
+      -v 02.SV-set_Genomes/sheep_ref_sorted_format_filtered_sv.vcf \
+      -m Sheep_18feature_RandomForest_model.joblib \
+      -s 04.validation-dataset/sheep/Sheep_SV_Set-sv_feature.tsv \
+      -a 04.validation-dataset/sheep/Romanov_30x/BreakPoint_ReadDepth_2Bam_feature.tsv \
+      -o Romanov_30_svlearn_genotype.vcf \
+      -n Romanov_30
+
+svlearn benchmark \
+      -b 04.validation-dataset/sheep/Sheep_SV_Set-Romanov_True_GT.vcf \
+      -c Romanov_30_svlearn_genotype.vcf \
+      -o Romanov_30_svlearn.bench.tsv \
+      -n1 Romanov -n2 Romanov_30
+```
+`Romanov_30_svlearn.bench.tsv`: The genotyping performance of `Romanov_30_svlearn_genotype.vcf` compared with the truth set, with the specific results as follows:
+```
+sv_set_number                 113042
+genotyped_sv_number           110163
+genotype_rate                 0.9745
+accuracy_genotyped_sv_number  101289
+precison_GT                   0.8773
+recall_GT                     0.8189
+f1_GT                         0.8471
+precison                      0.9451
+recall                        0.8822
+f1                            0.9126
+conc_00                       0.9658
+conc_01                       0.8187
+conc_11                       0.8928
+wgc                           0.8924
+```
 
 ## Usage
 Before starting the SVLearn workflow, please ensure that all Requirements and SVLearn are configured in your environment.
@@ -351,7 +430,7 @@ $tree 05.para_feature/sample1/
  * other files: Paragraph’s output
 
 **Note:**
-In the `svlearn runParagraph`, the [Paragraph](https://github.com/Illumina/paragraph) is called twice to extract six paragraph features. The SVLearn package includes a binary distribution of [Paragraph v2.4a](https://github.com/Illumina/paragraph/releases/tag/v2.4a), and we haven’t made any changes to its code.
+In the `svlearn runParagraph`, the [Paragraph](https://github.com/Illumina/paragraph) is called twice to extract six paragraph features.
 
 ### 6. Genotyping
 In this step, the feature matrixs obtained from previous steps is integrated, and the [trained model](https://doi.org/10.5281/zenodo.11144997) is called to obtain the SV genotypes.
