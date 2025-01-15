@@ -474,7 +474,7 @@ def main(args=None):
 	parser.add_argument("--ref_fasta", type=str, required=True, help="The Fasta file of ref genome", metavar="file")
 	parser.add_argument("--ref_sv_vcf", type=str, required=True, help="The SV VCF file based ref genome", metavar="file")
 	parser.add_argument('--no-filter-overlaps', action='store_true', help='If specified, use all SVs to construct the ALT genome; otherwise, filter out overlapping SVs to improve genotyping performance.')
-	parser.add_argument("--min_distance", type=str, default="150", help="Filter out pairs of SVs that are less than this distance apart, default: 150", metavar="int")
+	parser.add_argument("--min_distance", type=str, default="300", help="Filter out pairs of SVs that are less than this distance apart, default: 300", metavar="int")
 	parser.add_argument("--read_length", type=str, default="150", help="Short reads leagth, default: 150", metavar="int")
 	parser.add_argument("-o", "--out", type=str, default="prepareAlt_output", help="The output dir name of prepareAlt", metavar="dir")
 
