@@ -1,6 +1,10 @@
 # SVLearn
 A machine learning-based genotyping tool for structural variation of short reads
 
+## Update (0.0.5)
+In the latest **0.0.5** release, SVLearn has introduced the `--no-filter-overlaps` option to the `prepareAlt` subcommand. When building the ALT genome, this option disables the filtering of overlapping SVs, ensuring that every input SV is included in the genotyping analysis.
+
+
 ## Installation
 SVLearn version 0.0.5 has undergone stability testing on Linux, including Ubuntu 20.04.3 and Red Hat Enterprise Linux 8.3 (Ootpa).
 
