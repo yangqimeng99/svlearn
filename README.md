@@ -541,3 +541,6 @@ usage: svlearn benchmark [-h] -b file -c file -n1 str -n2 str [-o file]
 -n2, --call_sample_name str    Sample name in call sv vcf set
 -o, --out file                 The out of bechmark result, Default: benchmark.result.tsv
 ```
+
+## Cite 
+Yang, Q., Sun, J., Wang, X. *et al.* SVLearn: a dual-reference machine learning approach enables accurate cross-species genotyping of structural variants. *Nat Commun* **16**, 2406 (2025). https://doi.org/10.1038/s41467-025-57756-z
