@@ -77,8 +77,17 @@ def process_biser_out(biser_file, Satellite_bed):
 
 	bed_a = pybedtools.BedTool.from_dataframe(df[[0, 1, 2, 3, 4, 5]])
 
-	intersect_result = bed_a.intersect(Satellite_bed, wo=True).sort().groupby(g=[1,2,3,4,5,6], c=10, o=['sum']).to_dataframe()
-	intersect_result['overlap_ratio'] = intersect_result['thickStart'] / (intersect_result['end'] - intersect_result['start'])
+	intersect_tmp = bed_a.intersect(Satellite_bed, wo=True).sort()
+
+	if len(intersect_tmp) == 0:
+		intersect_result = pd.DataFrame(columns=['chrom', 'start', 'end', 'name', 'score', 'strand', 'overlap_length'])
+		intersect_result['overlap_ratio'] = 0
+	else:
+		intersect_result = intersect_tmp.groupby(g=[1,2,3,4,5,6], c=10, o=['sum']).to_dataframe()
+		intersect_result['overlap_ratio'] = intersect_result['thickStart'] / (intersect_result['end'] - intersect_result['start'])
+
+	# intersect_result = bed_a.intersect(Satellite_bed, wo=True).sort().groupby(g=[1,2,3,4,5,6], c=10, o=['sum']).to_dataframe()
+	
 	filtered_overlap = intersect_result[intersect_result['overlap_ratio'] > 0.7]
 	filtered_overlap = filtered_overlap.astype({'chrom': 'str', 'name': 'str'})
 	merged_df = pd.merge(df, filtered_overlap, how='left', indicator=True,
