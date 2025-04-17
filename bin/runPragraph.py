@@ -198,6 +198,8 @@ def main(args=None):
         "BP_DEPTH": 1,
         "BP_NO_GT": 2, 
         "CONFLICT": 3,
+        ('CONFLICT', 'UNMATCHED'): 3,
+		('UNMATCHED', 'CONFLICT'): 3,
         "GQ": 4,
         ('UNMATCHED', 'NO_VALID_GT'): 5,
         ('NO_VALID_GT', 'UNMATCHED'): 5,
