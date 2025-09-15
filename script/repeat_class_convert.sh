@@ -10,8 +10,8 @@ fi
 awk 'BEGIN{
     
     map["0"]="Low_Repeat";
-    map["1"]="SINE";
-    map["2"]="LINE";
+    map["1"]="LINE";
+    map["2"]="SINE";
     map["3"]="LTR";
     map["4"]="DNA";
     map["5"]="Mixed_TEs";
